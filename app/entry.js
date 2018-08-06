@@ -1,16 +1,14 @@
 'use strict';
 import $ from 'jquery';
 
-const questionDisplay = document.getElementById('question-display');
-const answerText = document.getElementById('answer-text');
 const judgeDisplay = document.getElementById('judge-display');
-const flag = $('#course-flag').val();
 const sentences = $('#sentences').data('sentences');
+const flag = $('#course-flag').data('flag');
 let storedGradeAndStage = [];
 let questionsArray = [];
 let answersArray = [];
 let incorrectSentences = [];
-let isClicked, isStarted, isCheated, isRetried;
+let isClicked, isStarted, isCheated, isRetried, isRecorded;
 let count, finishCount;
 const countDownTime = 3;
 
@@ -53,24 +51,31 @@ function locateCenter() { // モーダルウィンドウを中央配置するた
   });
 }
 
-$(questionDisplay).click(() => {
+$('#question-display').click(() => {
   if (isClicked) {
-    answerText.focus();
+    $('#answer-text').focus();
     isClicked = false;
     count = 0;
     countDown(countDownTime);
   }
 });
 
-$(answerText).keypress((e) => {
+$('#answer-text').keypress((e) => {
   if (isStarted && e.which === 13) {
     isStarted = false;
-    judgement(answerText.value, answersArray[count]);
+    judgement($('#answer-text').val(), answersArray[count]);
+  }
+});
+
+$('#answer-button').click(() => {
+  if (isStarted) {
+    isStarted = false;
+    judgement($('#answer-text').val(), answersArray[count]);
   }
 });
 
 $('#cheat-button').click(() => {
-  answerText.focus();
+  $('#answer-text').focus();
   if (!isCheated) {
     isCheated = true;
     $('#cheat-display').removeClass('hidden');
@@ -78,6 +83,15 @@ $('#cheat-button').click(() => {
     const answerExample = wordChoice(answerReplace);
     const exampleNum = Math.floor(Math.random() * answerExample.length);
     $('#cheat-display').html(`解答例はこちら:<br>${answerExample[exampleNum]}`);
+  }
+});
+
+$('#record-button').click(() => {
+  if (isRecorded) {
+    alert('今の結果を記録しました。');
+    isRecorded = false;
+  } else {
+    alert('今の結果はすでに記録しています。');
   }
 });
 
@@ -108,16 +122,16 @@ $('#done').click(() => {
 
 function initialize() {
   $('#stage-zone').removeClass('hidden');
+  $('#judge-zone').addClass('hidden');
+  $('#cheat-zone').addClass('hidden');
   $('#result-zone').addClass('hidden');
   $('#incorrect-display-zone').addClass('hidden');
-  questionDisplay.innerText = 'ここをクリックすると問題が出ます。';
-  questionDisplay.className = 'not-started';
-  answerText.value = '';
-  $('#judge-zone').addClass('hidden');
+  $('#question-display').html('ここをクリックすると問題が出ます。');
+  $('#question-display').addClass('non-started');
+  $('#answer-text').val('');
   $('#judge-display').html('');
-  $('#cheat-button').addClass('hidden');
   $('#cheat-display').html('');
-  $('#cheat-display').addClass('hidden');
+  $('#result-display').html('');
   $('#incorrect-display').html('');
   questionsArray = [];
   answersArray = [];
@@ -126,6 +140,7 @@ function initialize() {
   isStarted = false;
   isCheated = false;
   isRetried = false;
+  isRecorded = false;
   count = 0;
   finishCount = (flag === 'select') ? 10 : parseInt($('#random-num').val());
 }
@@ -156,14 +171,19 @@ function setStage(grade, stage) {
 }
 
 function countDown(countDownTime) {
-  questionDisplay.innerText = countDownTime--;
+  if (questionsArray.length === 0) {
+    $('#question-display').removeClass('non-started');
+    $('#question-display').html('準備中です。');
+    return;
+  }
+  $('#question-display').html(countDownTime--);
   let timerId = setTimeout(() => {
     countDown(countDownTime);
   }, 1000);
   if (countDownTime < 0) {
     clearTimeout(timerId);
-    questionDisplay.className = 'started';
-    questionDisplay.innerHTML = questionsArray[count];
+    $('#question-display').removeClass('non-started');
+    $('#question-display').html(questionsArray[count]);
     $('#cheat-button').removeClass('hidden');
     isStarted = true;
   }
@@ -204,7 +224,7 @@ function judgement(textRaw, answerRaw) {
 }
 
 function correctDisp() {
-  judgeDispProcess('正解！', 'correct');
+  judgeDispProcess('正解です！', 'correct');
   setTimeout(() => {
     nextQuestion(questionsArray);
   }, 1000);
@@ -213,7 +233,7 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   const answerExample = wordChoice(answerRaw);
   const exampleNum = Math.floor(Math.random() * answerExample.length);
-  const incorrectText = `不正解！<br><span style="color: orange">あなたの解答:</span><br>${textRaw}<br><span style="color: orange">解答例はこちら:</span><br>${answerExample[exampleNum]}`;
+  const incorrectText = `不正解です！<br><span style="color: orange">あなたの解答:</span><br>${textRaw}<br><span style="color: orange">解答例はこちら:</span><br>${answerExample[exampleNum]}`;
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
     question: questionsArray[count].replace(/\<br\>/, '　'),
@@ -253,9 +273,9 @@ function judgeDispProcess(text, className) {
 function nextQuestion(array) {
   count++;
   if (count < finishCount) {
-    questionDisplay.innerHTML = array[count];
-    answerText.value = '';
-    answerText.focus();
+    $('#question-display').html(array[count]);
+    $('#answer-text').val('');
+    $('#answer-text').focus();
     isStarted = true;
     $('#judge-zone').addClass('hidden');
     $('#judge-display').html('');
@@ -268,7 +288,11 @@ function nextQuestion(array) {
 function finish() {
   $('#stage-zone').addClass('hidden');
   $('#result-zone').removeClass('hidden');
+  $('#judge-display').html('');
   const incorrectCount = incorrectSentences.length;
+  if (!isRetried) {
+    isRecorded = true;
+  }
   if (incorrectCount === 0) {
     isRetried = false;
     $('#result-display').html(`全問正解！<br>${count}問中: 正解: ${count}問 不正解: 0問<br>正解率は100％でした！`);
@@ -287,15 +311,14 @@ function finish() {
     }
     $('#incorrect-display').html(storedText);
   }
-  isClicked = true;
   isStarted = false;
 }
 
 function incorrectRetry() {
   $('#result-zone').addClass('hidden');
   $('#stage-zone').removeClass('hidden');
-  answerText.value = '';
-  answerText.focus();
+  $('#answer-text').val('');
+  $('#answer-text').focus();
   $('#judge-zone').addClass('hidden');
   $('#cheat-button').removeClass('hidden');
   $('#cheat-display').html('');
@@ -308,8 +331,7 @@ function incorrectRetry() {
   incorrectSentences = [];
   count = 0;
   finishCount = questionsArray.length;
-  questionDisplay.className = 'started';
-  questionDisplay.innerHTML = questionsArray[count];
+  $('#question-display').html(questionsArray[count]);
   isStarted = true;
 }
 
@@ -356,8 +378,9 @@ function replacer(str) {
 function wordChoice(str) {
   let tmpReplace = str;
   let candidatesWords = [];
-  let matchCount = 0;
+  let matchCount = 0, loopCount = 0;
   let frontWord, backWord;
+  let badSentence = false;
 
   while (true) {
     if (tmpReplace.indexOf('[') >= 0) {
@@ -369,6 +392,11 @@ function wordChoice(str) {
     } else {
       break;
     }
+    if (loopCount > 10000) {
+      badSentence = true;
+      break;
+    }
+    loopCount++;
   }
 
   const candidateCount = Math.pow(2, matchCount);
@@ -377,15 +405,21 @@ function wordChoice(str) {
   let tmpChoice = tmpReplace;
   let candidatesSentences = [];
 
-  for (let i = 0; i < candidateCount; i++) {
-    binary = dumpBinary(i, matchCount);
-    for (let j = 0; j < matchCount; j++) {
-      sliceBinaries[j] = parseInt(binary.slice(j, j + 1));
-      tmpChoice = tmpChoice.replace(/\&{3}/, candidatesWords[j][sliceBinaries[j]]);
-      tmpChoice = tmpChoice.replace(/\s{2,}/, ' ');
+  if (badSentence) {
+    str = '英文の変換処理を失敗しました。';
+    candidatesSentences = [str, str];
+    return candidatesSentences;
+  } else {
+    for (let i = 0; i < candidateCount; i++) {
+      binary = dumpBinary(i, matchCount);
+      for (let j = 0; j < matchCount; j++) {
+        sliceBinaries[j] = parseInt(binary.slice(j, j + 1));
+        tmpChoice = tmpChoice.replace(/\&{3}/, candidatesWords[j][sliceBinaries[j]]);
+        tmpChoice = tmpChoice.replace(/\s{2,}/, ' ');
+      }
+      candidatesSentences[i] = tmpChoice;
+      tmpChoice = tmpReplace;
     }
-    candidatesSentences[i] = tmpChoice;
-    tmpChoice = tmpReplace;
   }
 
   return candidatesSentences;

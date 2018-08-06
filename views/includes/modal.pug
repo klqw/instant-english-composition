@@ -6,10 +6,10 @@
     button#close ☓
   #stage-zone
     #question-zone
-      p#question-display.non-started ここをクリックすると問題が出ます。
-    input(type="text")#answer-text
+      p#question-display
+    input#answer-text(type="text")
     br
-    p#information 英作文を入力したらEnterキーを押してください。
+    button#answer-button 英作文を入力したら Enterキー または このボタン を押してください。
     #judge-zone
       p#judge-display
     #cheat-zone
@@ -18,11 +18,13 @@
       p#cheat-display.hidden
   #result-zone
     p#result-display
-    p#retry-button.result-btn もう一度最初からやる
-    p#incorrect-retry-button.result-btn 間違えた問題に再チャレンジ
-    p#incorrect-check-button.result-btn 間違えた問題を見る
-    p#stage-select-button.result-btn #{title}に戻る
-    p#index.button.result-btn(onclick="location.href='index.html'") トップページに戻る
+    if user
+      button#record-button 結果を記録する
+    button#retry-button.result-btn もう一度最初からやる
+    button#incorrect-retry-button.result-btn 間違えた問題に再チャレンジ
+    button#incorrect-check-button.result-btn 間違えた問題を見る
+    button#stage-select-button.result-btn #{title}に戻る
+    button#index.button.result-btn(onclick="location.href='index.html'") トップページに戻る
   #incorrect-display-zone
     #incorrect-display
     button#done 確認したので戻る

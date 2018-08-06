@@ -76,11 +76,9 @@ var _jquery2 = _interopRequireDefault(_jquery);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var questionDisplay = document.getElementById('question-display');
-var answerText = document.getElementById('answer-text');
 var judgeDisplay = document.getElementById('judge-display');
-var flag = (0, _jquery2.default)('#course-flag').val();
 var sentences = (0, _jquery2.default)('#sentences').data('sentences');
+var flag = (0, _jquery2.default)('#course-flag').data('flag');
 var storedGradeAndStage = [];
 var questionsArray = [];
 var answersArray = [];
@@ -88,7 +86,8 @@ var incorrectSentences = [];
 var isClicked = void 0,
     isStarted = void 0,
     isCheated = void 0,
-    isRetried = void 0;
+    isRetried = void 0,
+    isRecorded = void 0;
 var count = void 0,
     finishCount = void 0;
 var countDownTime = 3;
@@ -135,24 +134,31 @@ function locateCenter() {
   });
 }
 
-(0, _jquery2.default)(questionDisplay).click(function () {
+(0, _jquery2.default)('#question-display').click(function () {
   if (isClicked) {
-    answerText.focus();
+    (0, _jquery2.default)('#answer-text').focus();
     isClicked = false;
     count = 0;
     countDown(countDownTime);
   }
 });
 
-(0, _jquery2.default)(answerText).keypress(function (e) {
+(0, _jquery2.default)('#answer-text').keypress(function (e) {
   if (isStarted && e.which === 13) {
     isStarted = false;
-    judgement(answerText.value, answersArray[count]);
+    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
+  }
+});
+
+(0, _jquery2.default)('#answer-button').click(function () {
+  if (isStarted) {
+    isStarted = false;
+    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
   }
 });
 
 (0, _jquery2.default)('#cheat-button').click(function () {
-  answerText.focus();
+  (0, _jquery2.default)('#answer-text').focus();
   if (!isCheated) {
     isCheated = true;
     (0, _jquery2.default)('#cheat-display').removeClass('hidden');
@@ -160,6 +166,15 @@ function locateCenter() {
     var answerExample = wordChoice(answerReplace);
     var exampleNum = Math.floor(Math.random() * answerExample.length);
     (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:<br>' + answerExample[exampleNum]);
+  }
+});
+
+(0, _jquery2.default)('#record-button').click(function () {
+  if (isRecorded) {
+    alert('今の結果を記録しました。');
+    isRecorded = false;
+  } else {
+    alert('今の結果はすでに記録しています。');
   }
 });
 
@@ -190,16 +205,16 @@ function locateCenter() {
 
 function initialize() {
   (0, _jquery2.default)('#stage-zone').removeClass('hidden');
+  (0, _jquery2.default)('#judge-zone').addClass('hidden');
+  (0, _jquery2.default)('#cheat-zone').addClass('hidden');
   (0, _jquery2.default)('#result-zone').addClass('hidden');
   (0, _jquery2.default)('#incorrect-display-zone').addClass('hidden');
-  questionDisplay.innerText = 'ここをクリックすると問題が出ます。';
-  questionDisplay.className = 'not-started';
-  answerText.value = '';
-  (0, _jquery2.default)('#judge-zone').addClass('hidden');
+  (0, _jquery2.default)('#question-display').html('ここをクリックすると問題が出ます。');
+  (0, _jquery2.default)('#question-display').addClass('non-started');
+  (0, _jquery2.default)('#answer-text').val('');
   (0, _jquery2.default)('#judge-display').html('');
-  (0, _jquery2.default)('#cheat-button').addClass('hidden');
   (0, _jquery2.default)('#cheat-display').html('');
-  (0, _jquery2.default)('#cheat-display').addClass('hidden');
+  (0, _jquery2.default)('#result-display').html('');
   (0, _jquery2.default)('#incorrect-display').html('');
   questionsArray = [];
   answersArray = [];
@@ -208,6 +223,7 @@ function initialize() {
   isStarted = false;
   isCheated = false;
   isRetried = false;
+  isRecorded = false;
   count = 0;
   finishCount = flag === 'select' ? 10 : parseInt((0, _jquery2.default)('#random-num').val());
 }
@@ -243,14 +259,19 @@ function setStage(grade, stage) {
 }
 
 function countDown(countDownTime) {
-  questionDisplay.innerText = countDownTime--;
+  if (questionsArray.length === 0) {
+    (0, _jquery2.default)('#question-display').removeClass('non-started');
+    (0, _jquery2.default)('#question-display').html('準備中です。');
+    return;
+  }
+  (0, _jquery2.default)('#question-display').html(countDownTime--);
   var timerId = setTimeout(function () {
     countDown(countDownTime);
   }, 1000);
   if (countDownTime < 0) {
     clearTimeout(timerId);
-    questionDisplay.className = 'started';
-    questionDisplay.innerHTML = questionsArray[count];
+    (0, _jquery2.default)('#question-display').removeClass('non-started');
+    (0, _jquery2.default)('#question-display').html(questionsArray[count]);
     (0, _jquery2.default)('#cheat-button').removeClass('hidden');
     isStarted = true;
   }
@@ -293,7 +314,7 @@ function judgement(textRaw, answerRaw) {
 }
 
 function correctDisp() {
-  judgeDispProcess('正解！', 'correct');
+  judgeDispProcess('正解です！', 'correct');
   setTimeout(function () {
     nextQuestion(questionsArray);
   }, 1000);
@@ -302,7 +323,7 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   var answerExample = wordChoice(answerRaw);
   var exampleNum = Math.floor(Math.random() * answerExample.length);
-  var incorrectText = '\u4E0D\u6B63\u89E3\uFF01<br><span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54:</span><br>' + textRaw + '<br><span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:</span><br>' + answerExample[exampleNum];
+  var incorrectText = '\u4E0D\u6B63\u89E3\u3067\u3059\uFF01<br><span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54:</span><br>' + textRaw + '<br><span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:</span><br>' + answerExample[exampleNum];
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
     question: questionsArray[count].replace(/\<br\>/, '　'),
@@ -342,9 +363,9 @@ function judgeDispProcess(text, className) {
 function nextQuestion(array) {
   count++;
   if (count < finishCount) {
-    questionDisplay.innerHTML = array[count];
-    answerText.value = '';
-    answerText.focus();
+    (0, _jquery2.default)('#question-display').html(array[count]);
+    (0, _jquery2.default)('#answer-text').val('');
+    (0, _jquery2.default)('#answer-text').focus();
     isStarted = true;
     (0, _jquery2.default)('#judge-zone').addClass('hidden');
     (0, _jquery2.default)('#judge-display').html('');
@@ -357,7 +378,11 @@ function nextQuestion(array) {
 function finish() {
   (0, _jquery2.default)('#stage-zone').addClass('hidden');
   (0, _jquery2.default)('#result-zone').removeClass('hidden');
+  (0, _jquery2.default)('#judge-display').html('');
   var incorrectCount = incorrectSentences.length;
+  if (!isRetried) {
+    isRecorded = true;
+  }
   if (incorrectCount === 0) {
     isRetried = false;
     (0, _jquery2.default)('#result-display').html('\u5168\u554F\u6B63\u89E3\uFF01<br>' + count + '\u554F\u4E2D: \u6B63\u89E3: ' + count + '\u554F \u4E0D\u6B63\u89E3: 0\u554F<br>\u6B63\u89E3\u7387\u306F100\uFF05\u3067\u3057\u305F\uFF01');
@@ -373,15 +398,14 @@ function finish() {
     }
     (0, _jquery2.default)('#incorrect-display').html(storedText);
   }
-  isClicked = true;
   isStarted = false;
 }
 
 function incorrectRetry() {
   (0, _jquery2.default)('#result-zone').addClass('hidden');
   (0, _jquery2.default)('#stage-zone').removeClass('hidden');
-  answerText.value = '';
-  answerText.focus();
+  (0, _jquery2.default)('#answer-text').val('');
+  (0, _jquery2.default)('#answer-text').focus();
   (0, _jquery2.default)('#judge-zone').addClass('hidden');
   (0, _jquery2.default)('#cheat-button').removeClass('hidden');
   (0, _jquery2.default)('#cheat-display').html('');
@@ -394,8 +418,7 @@ function incorrectRetry() {
   incorrectSentences = [];
   count = 0;
   finishCount = questionsArray.length;
-  questionDisplay.className = 'started';
-  questionDisplay.innerHTML = questionsArray[count];
+  (0, _jquery2.default)('#question-display').html(questionsArray[count]);
   isStarted = true;
 }
 
@@ -442,9 +465,11 @@ function replacer(str) {
 function wordChoice(str) {
   var tmpReplace = str;
   var candidatesWords = [];
-  var matchCount = 0;
+  var matchCount = 0,
+      loopCount = 0;
   var frontWord = void 0,
       backWord = void 0;
+  var badSentence = false;
 
   while (true) {
     if (tmpReplace.indexOf('[') >= 0) {
@@ -456,6 +481,11 @@ function wordChoice(str) {
     } else {
       break;
     }
+    if (loopCount > 10000) {
+      badSentence = true;
+      break;
+    }
+    loopCount++;
   }
 
   var candidateCount = Math.pow(2, matchCount);
@@ -464,15 +494,21 @@ function wordChoice(str) {
   var tmpChoice = tmpReplace;
   var candidatesSentences = [];
 
-  for (var i = 0; i < candidateCount; i++) {
-    binary = dumpBinary(i, matchCount);
-    for (var j = 0; j < matchCount; j++) {
-      sliceBinaries[j] = parseInt(binary.slice(j, j + 1));
-      tmpChoice = tmpChoice.replace(/\&{3}/, candidatesWords[j][sliceBinaries[j]]);
-      tmpChoice = tmpChoice.replace(/\s{2,}/, ' ');
+  if (badSentence) {
+    str = '英文の変換処理を失敗しました。';
+    candidatesSentences = [str, str];
+    return candidatesSentences;
+  } else {
+    for (var i = 0; i < candidateCount; i++) {
+      binary = dumpBinary(i, matchCount);
+      for (var j = 0; j < matchCount; j++) {
+        sliceBinaries[j] = parseInt(binary.slice(j, j + 1));
+        tmpChoice = tmpChoice.replace(/\&{3}/, candidatesWords[j][sliceBinaries[j]]);
+        tmpChoice = tmpChoice.replace(/\s{2,}/, ' ');
+      }
+      candidatesSentences[i] = tmpChoice;
+      tmpChoice = tmpReplace;
     }
-    candidatesSentences[i] = tmpChoice;
-    tmpChoice = tmpReplace;
   }
 
   return candidatesSentences;
