@@ -70,18 +70,17 @@ $('#answer-text').keypress((e) => {
 $('#answer-button').click(() => {
   if (isStarted) {
     isStarted = false;
+    $('#answer-text').focus();
     judgement($('#answer-text').val(), answersArray[count]);
   }
 });
 
 $('#cheat-button').click(() => {
-  $('#answer-text').focus();
   if (!isCheated) {
     isCheated = true;
-    $('#cheat-display').removeClass('hidden');
-    const answerReplace = replacer(answersArray[count]);
-    const answerExample = wordChoice(answerReplace);
+    const answerExample = wordChoice(answersArray[count]);
     const exampleNum = Math.floor(Math.random() * answerExample.length);
+    $('#answer-text').focus();
     $('#cheat-display').html(`解答例はこちら:<br>${answerExample[exampleNum]}`);
   }
 });
@@ -184,7 +183,7 @@ function countDown(countDownTime) {
     clearTimeout(timerId);
     $('#question-display').removeClass('non-started');
     $('#question-display').html(questionsArray[count]);
-    $('#cheat-button').removeClass('hidden');
+    $('#cheat-zone').removeClass('hidden');
     isStarted = true;
   }
 }
@@ -264,8 +263,8 @@ function cheatDisp(textRaw, answerRaw) {
 
 function judgeDispProcess(text, className) {
   judgeDisplay.className = className;
-  $('#cheat-button').addClass('hidden');
-  $('#cheat-display').addClass('hidden');
+  $('#cheat-zone').addClass('hidden');
+  $('#cheat-display').html('');
   $('#judge-zone').removeClass('hidden');
   $('#judge-display').html(text);
 }
@@ -279,7 +278,7 @@ function nextQuestion(array) {
     isStarted = true;
     $('#judge-zone').addClass('hidden');
     $('#judge-display').html('');
-    $('#cheat-button').removeClass('hidden');
+    $('#cheat-zone').removeClass('hidden');
   } else {
     finish();
   }
@@ -289,6 +288,7 @@ function finish() {
   $('#stage-zone').addClass('hidden');
   $('#result-zone').removeClass('hidden');
   $('#judge-display').html('');
+  isCheated = true;
   const incorrectCount = incorrectSentences.length;
   if (!isRetried) {
     isRecorded = true;
@@ -320,8 +320,7 @@ function incorrectRetry() {
   $('#answer-text').val('');
   $('#answer-text').focus();
   $('#judge-zone').addClass('hidden');
-  $('#cheat-button').removeClass('hidden');
-  $('#cheat-display').html('');
+  $('#cheat-zone').removeClass('hidden');
   questionsArray = [];
   answersArray = [];
   incorrectSentences.forEach((value) => {
@@ -333,6 +332,7 @@ function incorrectRetry() {
   finishCount = questionsArray.length;
   $('#question-display').html(questionsArray[count]);
   isStarted = true;
+  isCheated = false;
 }
 
 function replacer(str) {

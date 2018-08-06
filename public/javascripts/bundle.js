@@ -153,18 +153,17 @@ function locateCenter() {
 (0, _jquery2.default)('#answer-button').click(function () {
   if (isStarted) {
     isStarted = false;
+    (0, _jquery2.default)('#answer-text').focus();
     judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
   }
 });
 
 (0, _jquery2.default)('#cheat-button').click(function () {
-  (0, _jquery2.default)('#answer-text').focus();
   if (!isCheated) {
     isCheated = true;
-    (0, _jquery2.default)('#cheat-display').removeClass('hidden');
-    var answerReplace = replacer(answersArray[count]);
-    var answerExample = wordChoice(answerReplace);
+    var answerExample = wordChoice(answersArray[count]);
     var exampleNum = Math.floor(Math.random() * answerExample.length);
+    (0, _jquery2.default)('#answer-text').focus();
     (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:<br>' + answerExample[exampleNum]);
   }
 });
@@ -272,7 +271,7 @@ function countDown(countDownTime) {
     clearTimeout(timerId);
     (0, _jquery2.default)('#question-display').removeClass('non-started');
     (0, _jquery2.default)('#question-display').html(questionsArray[count]);
-    (0, _jquery2.default)('#cheat-button').removeClass('hidden');
+    (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
     isStarted = true;
   }
 }
@@ -354,8 +353,8 @@ function cheatDisp(textRaw, answerRaw) {
 
 function judgeDispProcess(text, className) {
   judgeDisplay.className = className;
-  (0, _jquery2.default)('#cheat-button').addClass('hidden');
-  (0, _jquery2.default)('#cheat-display').addClass('hidden');
+  (0, _jquery2.default)('#cheat-zone').addClass('hidden');
+  (0, _jquery2.default)('#cheat-display').html('');
   (0, _jquery2.default)('#judge-zone').removeClass('hidden');
   (0, _jquery2.default)('#judge-display').html(text);
 }
@@ -369,7 +368,7 @@ function nextQuestion(array) {
     isStarted = true;
     (0, _jquery2.default)('#judge-zone').addClass('hidden');
     (0, _jquery2.default)('#judge-display').html('');
-    (0, _jquery2.default)('#cheat-button').removeClass('hidden');
+    (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
   } else {
     finish();
   }
@@ -379,6 +378,7 @@ function finish() {
   (0, _jquery2.default)('#stage-zone').addClass('hidden');
   (0, _jquery2.default)('#result-zone').removeClass('hidden');
   (0, _jquery2.default)('#judge-display').html('');
+  isCheated = true;
   var incorrectCount = incorrectSentences.length;
   if (!isRetried) {
     isRecorded = true;
@@ -407,8 +407,7 @@ function incorrectRetry() {
   (0, _jquery2.default)('#answer-text').val('');
   (0, _jquery2.default)('#answer-text').focus();
   (0, _jquery2.default)('#judge-zone').addClass('hidden');
-  (0, _jquery2.default)('#cheat-button').removeClass('hidden');
-  (0, _jquery2.default)('#cheat-display').html('');
+  (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
   questionsArray = [];
   answersArray = [];
   incorrectSentences.forEach(function (value) {
@@ -420,6 +419,7 @@ function incorrectRetry() {
   finishCount = questionsArray.length;
   (0, _jquery2.default)('#question-display').html(questionsArray[count]);
   isStarted = true;
+  isCheated = false;
 }
 
 function replacer(str) {
