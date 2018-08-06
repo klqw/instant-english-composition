@@ -10,21 +10,22 @@ block content
     p #{tabs.text1}
     each button in buttons
       if button.grade==1
-        button.btn.open(data-grade=`#{button.grade}`, data-stage=`#{button.stage}`) #{button.text}
+        button.btn.open(data-grade=button.grade, data-stage=button.stage) #{button.text}
   .content-wrap.disp-none
     p #{tabs.text2}
     each button in buttons
       if button.grade==2
-        button.btn.open(data-grade=`#{button.grade}`, data-stage=`#{button.stage}`) #{button.text}
+        button.btn.open(data-grade=button.grade, data-stage=button.stage) #{button.text}
   .content-wrap.disp-none
     p #{tabs.text3}
     each button in buttons
       if button.grade==3
-        button.btn.open(data-grade=`#{button.grade}`, data-stage=`#{button.stage}`) #{button.text}
+        button.btn.open(data-grade=button.grade, data-stage=button.stage) #{button.text}
 
   div
     a(href="/") ホームに戻る
 
-  input.course-flag(type="hidden", value=`#{flag}`)
+  input.course-flag(type="hidden", value=flag)
 
   include includes/modal.pug
+  include includes/footer.pug
