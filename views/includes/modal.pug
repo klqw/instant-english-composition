@@ -1,0 +1,28 @@
+//- includes/modal.pug
+#overlay
+#modal-contents
+  div
+    #{title}
+    button#close ☓
+  #stage-zone
+    #question-zone
+      p#question-display.non-started ここをクリックすると問題が出ます。
+    input(type="text")#answer-text
+    br
+    p#information 英作文を入力したらEnterキーを押してください。
+    #judge-zone
+      p#judge-display
+    #cheat-zone
+      p
+        button#cheat-button.btn.hidden カンニングボタン
+      p#cheat-display.hidden
+  #result-zone
+    p#result-display
+    p#retry-button.result-btn もう一度最初からやる
+    p#incorrect-retry-button.result-btn 間違えた問題に再チャレンジ
+    p#incorrect-check-button.result-btn 間違えた問題を見る
+    p#stage-select-button.result-btn #{title}に戻る
+    p#index.button.result-btn(onclick="location.href='index.html'") トップページに戻る
+  #incorrect-display-zone
+    #incorrect-display
+    button#done 確認したので戻る

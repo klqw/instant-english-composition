@@ -56,6 +56,8 @@ passport.use(new GitHubStrategy({
 var index = require('./routes/index');
 var login = require('./routes/login');
 var logout = require('./routes/logout');
+var select = require('./routes/select');
+var random = require('./routes/random');
 var sentences = require('./routes/sentences');
 
 var app = express();
@@ -80,6 +82,8 @@ app.use(passport.session());
 app.use('/', index);
 app.use('/login', login);
 app.use('/logout', logout);
+app.use('/select', select);
+app.use('/random', random);
 app.use('/sentences', sentences);
 
 app.get('/auth/github',

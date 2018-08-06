@@ -1,0 +1,27 @@
+extends layout
+
+block content
+  p #{title}
+  p 問題数を決めてください。
+  select#random-num(name="問題数")
+    option(value="5", selected="") 5問
+    option(value="10") 10問
+    option(value="50") 50問
+  p 問題数を決めたら、下のボタンをクリックしてください。
+  .content-wrap
+    each button in buttons
+      if button.grade==96
+        button.btn.open(data-grade="1", data-stage=`#{button.stage}`) #{button.text}
+      else if button.grade==97
+        button.btn.open(data-grade="2", data-stage=`#{button.stage}`) #{button.text}
+      else if button.grade==98
+        button.btn.open(data-grade="3", data-stage=`#{button.stage}`) #{button.text}
+      else if button.grade==99
+        button.btn.open(data-grade=`#{button.grade}`, data-stage=`#{button.stage}`) #{button.text}
+
+  div
+    a(href="/") ホームに戻る
+
+  input.course-flag(type="hidden", value=`#{flag}`)
+
+  include includes/modal.pug
