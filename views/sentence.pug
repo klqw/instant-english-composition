@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  div
+    a(href="/sentences/new") 新しい問題文を作る
+  h3 問題文一覧
+  each sentence in sentences
+    p 問題#{sentence.sentenceId}: #{sentence.question}
+    p 解答#{sentence.sentenceId}: #{sentence.answer}
+    hr

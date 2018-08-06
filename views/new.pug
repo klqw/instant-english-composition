@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  form(method="post", action="/sentences")
+    div
+      h5 学年
+      input(type="text" name="grade")
+    div
+      h5 ステージ
+      input(type="text" name="stage")
+    div
+      h5 和文
+      input(type="text" name="question")
+    div
+      h5 英文
+      input(type="text" name="answer")
+    button(type="submit") 問題文をつくる
