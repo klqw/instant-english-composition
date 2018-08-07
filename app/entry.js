@@ -25,8 +25,8 @@ $('.tab li').click(function() {  // タブの処理
 $('.open').each((i, e) => { // 問題文をセットしてモーダルウィンドウを開く
   const button = $(e);
   button.click(() => {
-    const grade = button.data('grade');
-    const stage = button.data('stage');
+    const grade = parseInt(button.data('grade'));
+    const stage = parseInt(button.data('stage'));
     initialize();
     storedGradeAndStage = setStage(grade, stage);
     $('#overlay, #modal-contents').fadeIn();
@@ -145,28 +145,60 @@ function initialize() {
 }
 
 function setStage(grade, stage) {
-  const gradeNum = parseInt(grade);
-  const stageNum = parseInt(stage);
-  const gradeAndStage = [gradeNum, stageNum];
+  const gradeAndStage = [grade, stage];
   if (flag === 'select') {
     let tmpQuestion, tmpAnswer;
-    let num = 0;
     // shuffle(sentencesArray);
     for (let i = 0; i < sentences.length; i++) {
       if (grade === sentences[i].grade && stage === sentences[i].stage) {
         tmpQuestion = sentences[i].question;
         tmpAnswer = sentences[i].answer;
-        questionsArray[num] = tmpQuestion;
-        answersArray[num] = tmpAnswer;
-        num++;
+        questionsArray.push(tmpQuestion);
+        answersArray.push(tmpAnswer);
       }
     }
+    console.log(questionsArray);
+    console.log(answersArray);
   } else {
     shuffle(sentences);
-    questionsArray = sentences.map((value) => value.question);
-    answersArray = sentences.map((value) => value.answer);
+    switch (grade) {
+      case 1:
+        setRandomCourse(grade);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+      case 2:
+        setRandomCourse(grade);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+      case 3:
+        setRandomCourse(grade);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+      default:
+        questionsArray = sentences.map((value) => value.question);
+        answersArray = sentences.map((value) => value.answer);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+    }
+
   }
   return gradeAndStage;
+}
+
+function setRandomCourse(grade) {
+  let tmpQuestion, tmpAnswer;
+  for (let i = 0; i < sentences.length; i++) {
+    if (grade === sentences[i].grade) {
+      tmpQuestion = sentences[i].question;
+      tmpAnswer = sentences[i].answer;
+      questionsArray.push(tmpQuestion);
+      answersArray.push(tmpAnswer);
+    }
+  }
 }
 
 function countDown(countDownTime) {

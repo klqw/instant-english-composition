@@ -10486,8 +10486,8 @@ var countDownTime = 3;
   // 問題文をセットしてモーダルウィンドウを開く
   var button = (0, _jquery2.default)(e);
   button.click(function () {
-    var grade = button.data('grade');
-    var stage = button.data('stage');
+    var grade = parseInt(button.data('grade'));
+    var stage = parseInt(button.data('stage'));
     initialize();
     storedGradeAndStage = setStage(grade, stage);
     (0, _jquery2.default)('#overlay, #modal-contents').fadeIn();
@@ -10607,33 +10607,65 @@ function initialize() {
 }
 
 function setStage(grade, stage) {
-  var gradeNum = parseInt(grade);
-  var stageNum = parseInt(stage);
-  var gradeAndStage = [gradeNum, stageNum];
+  var gradeAndStage = [grade, stage];
   if (flag === 'select') {
     var tmpQuestion = void 0,
         tmpAnswer = void 0;
-    var num = 0;
     // shuffle(sentencesArray);
     for (var i = 0; i < sentences.length; i++) {
       if (grade === sentences[i].grade && stage === sentences[i].stage) {
         tmpQuestion = sentences[i].question;
         tmpAnswer = sentences[i].answer;
-        questionsArray[num] = tmpQuestion;
-        answersArray[num] = tmpAnswer;
-        num++;
+        questionsArray.push(tmpQuestion);
+        answersArray.push(tmpAnswer);
       }
     }
+    console.log(questionsArray);
+    console.log(answersArray);
   } else {
     shuffle(sentences);
-    questionsArray = sentences.map(function (value) {
-      return value.question;
-    });
-    answersArray = sentences.map(function (value) {
-      return value.answer;
-    });
+    switch (grade) {
+      case 1:
+        setRandomCourse(grade);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+      case 2:
+        setRandomCourse(grade);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+      case 3:
+        setRandomCourse(grade);
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+      default:
+        questionsArray = sentences.map(function (value) {
+          return value.question;
+        });
+        answersArray = sentences.map(function (value) {
+          return value.answer;
+        });
+        console.log(questionsArray);
+        console.log(answersArray);
+        break;
+    }
   }
   return gradeAndStage;
+}
+
+function setRandomCourse(grade) {
+  var tmpQuestion = void 0,
+      tmpAnswer = void 0;
+  for (var i = 0; i < sentences.length; i++) {
+    if (grade === sentences[i].grade) {
+      tmpQuestion = sentences[i].question;
+      tmpAnswer = sentences[i].answer;
+      questionsArray.push(tmpQuestion);
+      answersArray.push(tmpAnswer);
+    }
+  }
 }
 
 function countDown(countDownTime) {
@@ -10860,7 +10892,7 @@ function wordChoice(str) {
     } else {
       break;
     }
-    if (loopCount > 10000) {
+    if (loopCount > 1000) {
       badSentence = true;
       break;
     }
