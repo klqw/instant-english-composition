@@ -32,44 +32,39 @@ router.get('/new', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.post('/', authenticationEnsurer, (req, res, next) => {
-  const postFlag = parseInt(req.body.posted);
-  if (postFlag === 1) {
-    const answer = req.body.answer.trim().slice(0, 255);
-    const isChecked = answerCheck(answer);
-    if (isChecked) {
-      Sentence.create({
-        grade: parseInt(req.body.grade),
-        stage: parseInt(req.body.stage),
-        question: req.body.question.trim().slice(0, 255),
-        answer: answer,
-        createdBy: req.user.id
-      }).then(() => {
+router.post('/one', authenticationEnsurer, (req, res, next) => {
+  const answer = req.body.answer.trim().slice(0, 255);
+  const isChecked = answerCheck(answer);
+  if (isChecked) {
+    Sentence.create({
+      grade: req.body.grade,
+      stage: req.body.stage,
+      question: req.body.question.trim().slice(0, 255),
+      answer: answer,
+      createdBy: req.user.id
+    }).then(() => {
+      res.redirect('/sentences');
+    });
+  } else {
+    const err = new Error('英文の形式に不具合があったため、登録できませんでした。');
+    err.status = 400;
+    next(err);
+  }
+});
+
+router.post('/bulk', authenticationEnsurer, (req, res, next) => {
+  if (req.body.bulktext.indexOf('|') >= 0) {
+    const bulkTexts = req.body.bulktext.trim().split('\n').map((s) => s.trim());
+    const sentences = [];
+    const userId = parseInt(req.user.id);
+    const promise = converter(bulkTexts, sentences, userId);
+    Promise.all(promise).then((sentences) => {
+      Sentence.bulkCreate(sentences).then(() => {
         res.redirect('/sentences');
       });
-    } else {
-      const err = new Error('英文の形式に不具合があったため、登録できませんでした。');
-      err.status = 400;
-      next(err);
-    }
-  } else if (postFlag === 2) {
-    if (req.body.bulkpost.indexOf('|') >= 0) {
-      const bulkPosts = req.body.bulkpost.trim().split('\n').map((s) => s.trim());
-      const sentences = [];
-      const userId = parseInt(req.user.id);
-      const promise = converter(bulkPosts, sentences, userId);
-      Promise.all(promise).then((s) => {
-        Sentence.bulkCreate(s).then(() => {
-          res.redirect('/sentences');
-        });
-      });
-    } else {
-      const err = new Error('入力の形式に不具合があったため、登録できませんでした。');
-      err.status = 400;
-      next(err);
-    }
+    });
   } else {
-    const err = new Error('不正なリクエストです。');
+    const err = new Error('入力の形式に不具合があったため、登録できませんでした。');
     err.status = 400;
     next(err);
   }
@@ -94,10 +89,10 @@ function converter(rawArray, convertArray, createdBy) {
   let element = {}, grade, stage, question, answer;
   rawArray.forEach((e) => {
     tmpElement = e.split('|');
-    grade = parseInt(tmpElement[1]);
-    stage = parseInt(tmpElement[2]);
-    question = tmpElement[3];
-    answer = tmpElement[4];
+    grade = parseInt(tmpElement[0]);
+    stage = parseInt(tmpElement[1]);
+    question = tmpElement[2];
+    answer = tmpElement[3];
     element = {
       grade: grade,
       stage: stage,

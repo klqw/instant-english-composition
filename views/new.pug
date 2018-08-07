@@ -3,7 +3,7 @@ extends layout
 block content
   input#select-value(type="hidden" data-selects=selects)
 
-  form(method="post", action="/sentences")
+  form(method="post", action="/sentences/one")
     div
       h5 学年
       select#post-grade(name="grade")
@@ -22,11 +22,11 @@ block content
     div
       h5 英文
       input(type="text" name="answer")
-    button(type="submit" name="posted" value="1") 問題文をつくる
+    button(type="submit") 問題文をつくる
 
   if user.username==='klqw'
-    form(method="post", action="/sentences")
+    form(method="post", action="/sentences/bulk")
       div
         h5 一気に登録
-        textarea(name="bulkpost")
-      button(type="submit" name="posted" value="2") 問題文をつくる
+        textarea(name="bulktext")
+      button(type="submit") 問題文をつくる

@@ -10652,6 +10652,7 @@ function setStage(grade, stage) {
         break;
     }
   }
+
   return gradeAndStage;
 }
 

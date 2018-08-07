@@ -184,8 +184,8 @@ function setStage(grade, stage) {
         console.log(answersArray);
         break;
     }
-
   }
+  
   return gradeAndStage;
 }
 

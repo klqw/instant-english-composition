@@ -52,32 +52,52 @@ describe('/sentences', () => {
     passportStub.uninstall(app);
   });
 
-  it('問題文が作成でき、表示される', (done) => {
+  it('問題文が作成でき、表示される(単数登録)', (done) => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
       request(app)
-        .post('/sentences')
-        .send({ grade: 0, stage: 0, question: 'こんにちは', answer: 'hello' })
+        .post('/sentences/one')
+        .send({ grade: 99, stage: 99, question: '投稿テスト', answer: 'PostTest' })
         .expect('Location', /sentences/)
         .expect(302)
         .end((err, res) => {
           const createdSentencePath = res.headers.location;
           request(app)
             .get(createdSentencePath)
-            .expect(/こんにちは/)
-            .expect(/hello/)
+            .expect(/投稿テスト/)
+            .expect(/PostTest/)
             .expect(200)
             .end((err, res) => {
-              // テストで作成したデータを削除
-              Sentence.findAll({
-                where: { grade: 0 }
-              }).then((sentences) => {
-                sentences.forEach((s) => { s.destroy(); });
-              });
               if (err) return done(err);
               done();
             });
         });
     });
   });
-  
+
+  it('問題文が作成でき、表示される(一括登録)', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      request(app)
+        .post('/sentences/bulk')
+        .send({ bulktext: '99|99|投稿テスト1|PostTest1\r\n99|99|投稿テスト2|PostTest2\r\n99|99|投稿テスト3|PostTest3' })
+        .expect('Location', /sentences/)
+        .expect(302)
+        .end((err, res) => {
+          const createdSentencePath = res.headers.location;
+          request(app)
+            .get(createdSentencePath)
+            .expect(/投稿テスト1/)
+            .expect(/投稿テスト2/)
+            .expect(/投稿テスト3/)
+            .expect(/PostTest1/)
+            .expect(/PostTest2/)
+            .expect(/PostTest3/)
+            .expect(200)
+            .end((err, res) => {
+              if (err) return done(err);
+              done();
+            });
+        });
+    });
+  });
+
 });
