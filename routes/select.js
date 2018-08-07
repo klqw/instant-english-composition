@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const commons = require('./commons');
+const common = require('./common');
 const Sentence = require('../models/sentence');
 
 const flag = 'select';
@@ -12,7 +12,7 @@ const tabs = {
   text3: '中学3年レベル'
 };
 const buttons = [];
-commons.pushArray(buttons);
+common.pushArray(buttons);
 
 router.get('/', (req, res, next) => {
   Sentence.findAll().then((sentences) => {

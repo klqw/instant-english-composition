@@ -1,17 +1,32 @@
 extends layout
 
 block content
+  input#select-value(type="hidden" data-selects=selects)
+
   form(method="post", action="/sentences")
     div
       h5 学年
-      input(type="text" name="grade")
+      select#post-grade(name="grade")
+        option(value="1" selected="") #{grades.text1}
+        option(value="2") #{grades.text2}
+        option(value="3") #{grades.text3}
     div
       h5 ステージ
-      input(type="text" name="stage")
+      select#post-stage(name="stage")
+        each select in selects
+          if select.grade==1
+            option(value=select.stage) #{select.text}
     div
       h5 和文
       input(type="text" name="question")
     div
       h5 英文
       input(type="text" name="answer")
-    button(type="submit") 問題文をつくる
+    button(type="submit" name="posted" value="1") 問題文をつくる
+
+  if user.username==='klqw'
+    form(method="post", action="/sentences")
+      div
+        h5 一気に登録
+        textarea(name="bulkpost")
+      button(type="submit" name="posted" value="2") 問題文をつくる

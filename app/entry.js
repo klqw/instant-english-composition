@@ -392,7 +392,7 @@ function wordChoice(str) {
     } else {
       break;
     }
-    if (loopCount > 10000) {
+    if (loopCount > 1000) {
       badSentence = true;
       break;
     }

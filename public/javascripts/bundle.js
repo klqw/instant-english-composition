@@ -60,473 +60,11 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 1);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _jquery = __webpack_require__(1);
-
-var _jquery2 = _interopRequireDefault(_jquery);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var judgeDisplay = document.getElementById('judge-display');
-var sentences = (0, _jquery2.default)('#sentences').data('sentences');
-var flag = (0, _jquery2.default)('#course-flag').data('flag');
-var storedGradeAndStage = [];
-var questionsArray = [];
-var answersArray = [];
-var incorrectSentences = [];
-var isClicked = void 0,
-    isStarted = void 0,
-    isCheated = void 0,
-    isRetried = void 0,
-    isRecorded = void 0;
-var count = void 0,
-    finishCount = void 0;
-var countDownTime = 3;
-
-(0, _jquery2.default)('.tab li').click(function () {
-  // タブの処理
-  var index = (0, _jquery2.default)('.tab li').index(this);
-
-  (0, _jquery2.default)('.content-wrap').addClass('disp-none');
-  (0, _jquery2.default)('.content-wrap').eq(index).removeClass('disp-none');
-
-  (0, _jquery2.default)('.tab li').removeClass('select');
-  (0, _jquery2.default)(this).addClass('select');
-});
-
-(0, _jquery2.default)('.open').each(function (i, e) {
-  // 問題文をセットしてモーダルウィンドウを開く
-  var button = (0, _jquery2.default)(e);
-  button.click(function () {
-    var grade = button.data('grade');
-    var stage = button.data('stage');
-    initialize();
-    storedGradeAndStage = setStage(grade, stage);
-    (0, _jquery2.default)('#overlay, #modal-contents').fadeIn();
-  });
-});
-
-(0, _jquery2.default)('#close, #stage-select-button').click(function () {
-  (0, _jquery2.default)('#overlay, #modal-contents').fadeOut();
-});
-
-locateCenter();
-(0, _jquery2.default)(window).resize(locateCenter);
-
-function locateCenter() {
-  // モーダルウィンドウを中央配置するための関数
-  var w = (0, _jquery2.default)(window).width();
-  var h = (0, _jquery2.default)(window).height();
-  var cw = (0, _jquery2.default)('#modal-contents').outerWidth();
-  var ch = (0, _jquery2.default)('#modal-contents').outerHeight();
-  (0, _jquery2.default)('#modal-contents').css({
-    'left': (w - cw) / 2 + 'px',
-    'top': (h - ch) / 2 + 'px'
-  });
-}
-
-(0, _jquery2.default)('#question-display').click(function () {
-  if (isClicked) {
-    (0, _jquery2.default)('#answer-text').focus();
-    isClicked = false;
-    count = 0;
-    countDown(countDownTime);
-  }
-});
-
-(0, _jquery2.default)('#answer-text').keypress(function (e) {
-  if (isStarted && e.which === 13) {
-    isStarted = false;
-    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
-  }
-});
-
-(0, _jquery2.default)('#answer-button').click(function () {
-  if (isStarted) {
-    isStarted = false;
-    (0, _jquery2.default)('#answer-text').focus();
-    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
-  }
-});
-
-(0, _jquery2.default)('#cheat-button').click(function () {
-  if (!isCheated) {
-    isCheated = true;
-    var answerExample = wordChoice(answersArray[count]);
-    var exampleNum = Math.floor(Math.random() * answerExample.length);
-    (0, _jquery2.default)('#answer-text').focus();
-    (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:<br>' + answerExample[exampleNum]);
-  }
-});
-
-(0, _jquery2.default)('#record-button').click(function () {
-  if (isRecorded) {
-    alert('今の結果を記録しました。');
-    isRecorded = false;
-  } else {
-    alert('今の結果はすでに記録しています。');
-  }
-});
-
-(0, _jquery2.default)('#retry-button').click(function () {
-  initialize();
-  setStage(storedGradeAndStage[0], storedGradeAndStage[1]);
-  (0, _jquery2.default)('#result-zone').addClass('hidden');
-  (0, _jquery2.default)('#stage-zone').removeClass('hidden');
-});
-
-(0, _jquery2.default)('#incorrect-retry-button').click(function () {
-  if (isRetried) {
-    incorrectRetry();
-  } else {
-    alert('あなたは全問正解しました。');
-  }
-});
-
-(0, _jquery2.default)('#incorrect-check-button').click(function () {
-  (0, _jquery2.default)('#result-zone').addClass('hidden');
-  (0, _jquery2.default)('#incorrect-display-zone').removeClass('hidden');
-});
-
-(0, _jquery2.default)('#done').click(function () {
-  (0, _jquery2.default)('#incorrect-display-zone').addClass('hidden');
-  (0, _jquery2.default)('#result-zone').removeClass('hidden');
-});
-
-function initialize() {
-  (0, _jquery2.default)('#stage-zone').removeClass('hidden');
-  (0, _jquery2.default)('#judge-zone').addClass('hidden');
-  (0, _jquery2.default)('#cheat-zone').addClass('hidden');
-  (0, _jquery2.default)('#result-zone').addClass('hidden');
-  (0, _jquery2.default)('#incorrect-display-zone').addClass('hidden');
-  (0, _jquery2.default)('#question-display').html('ここをクリックすると問題が出ます。');
-  (0, _jquery2.default)('#question-display').addClass('non-started');
-  (0, _jquery2.default)('#answer-text').val('');
-  (0, _jquery2.default)('#judge-display').html('');
-  (0, _jquery2.default)('#cheat-display').html('');
-  (0, _jquery2.default)('#result-display').html('');
-  (0, _jquery2.default)('#incorrect-display').html('');
-  questionsArray = [];
-  answersArray = [];
-  incorrectSentences = [];
-  isClicked = true;
-  isStarted = false;
-  isCheated = false;
-  isRetried = false;
-  isRecorded = false;
-  count = 0;
-  finishCount = flag === 'select' ? 10 : parseInt((0, _jquery2.default)('#random-num').val());
-}
-
-function setStage(grade, stage) {
-  var gradeNum = parseInt(grade);
-  var stageNum = parseInt(stage);
-  var gradeAndStage = [gradeNum, stageNum];
-  if (flag === 'select') {
-    var tmpQuestion = void 0,
-        tmpAnswer = void 0;
-    var num = 0;
-    // shuffle(sentencesArray);
-    for (var i = 0; i < sentences.length; i++) {
-      if (grade === sentences[i].grade && stage === sentences[i].stage) {
-        tmpQuestion = sentences[i].question;
-        tmpAnswer = sentences[i].answer;
-        questionsArray[num] = tmpQuestion;
-        answersArray[num] = tmpAnswer;
-        num++;
-      }
-    }
-  } else {
-    shuffle(sentences);
-    questionsArray = sentences.map(function (value) {
-      return value.question;
-    });
-    answersArray = sentences.map(function (value) {
-      return value.answer;
-    });
-  }
-  return gradeAndStage;
-}
-
-function countDown(countDownTime) {
-  if (questionsArray.length === 0) {
-    (0, _jquery2.default)('#question-display').removeClass('non-started');
-    (0, _jquery2.default)('#question-display').html('準備中です。');
-    return;
-  }
-  (0, _jquery2.default)('#question-display').html(countDownTime--);
-  var timerId = setTimeout(function () {
-    countDown(countDownTime);
-  }, 1000);
-  if (countDownTime < 0) {
-    clearTimeout(timerId);
-    (0, _jquery2.default)('#question-display').removeClass('non-started');
-    (0, _jquery2.default)('#question-display').html(questionsArray[count]);
-    (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
-    isStarted = true;
-  }
-}
-
-function shuffle(array) {
-  for (var i = array.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = array[i];
-    array[i] = array[j];
-    array[j] = tmp;
-  }
-}
-
-function judgement(textRaw, answerRaw) {
-  var textReplace = replacer(textRaw);
-  var answerReplace = replacer(answerRaw);
-
-  if (isCheated) {
-    // カンニングボタンを押したときの処理
-    cheatDisp(textRaw, answerRaw);
-  } else if (answerReplace.indexOf('[') >= 0) {
-    // 使用できる単語が複数ある場合の処理
-    var answersCandidates = wordChoice(answerReplace);
-    var correctFlag = false;
-    for (var i = 0; i < answersCandidates.length; i++) {
-      if (textReplace === answersCandidates[i]) {
-        correctFlag = true;
-        break;
-      }
-    }
-    correctFlag ? correctDisp() : incorrectDisp(textRaw, answerRaw);
-  } else {
-    if (textReplace === answerReplace) {
-      correctDisp();
-    } else {
-      incorrectDisp(textRaw, answerRaw);
-    }
-  }
-}
-
-function correctDisp() {
-  judgeDispProcess('正解です！', 'correct');
-  setTimeout(function () {
-    nextQuestion(questionsArray);
-  }, 1000);
-}
-
-function incorrectDisp(textRaw, answerRaw) {
-  var answerExample = wordChoice(answerRaw);
-  var exampleNum = Math.floor(Math.random() * answerExample.length);
-  var incorrectText = '\u4E0D\u6B63\u89E3\u3067\u3059\uFF01<br><span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54:</span><br>' + textRaw + '<br><span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:</span><br>' + answerExample[exampleNum];
-  judgeDispProcess(incorrectText, 'incorrect');
-  incorrectSentences.push({
-    question: questionsArray[count].replace(/\<br\>/, '　'),
-    yourAnswer: textRaw,
-    answerRaw: answerRaw,
-    answerExample: answerExample[exampleNum]
-  });
-  setTimeout(function () {
-    nextQuestion(questionsArray);
-  }, 1000);
-}
-
-function cheatDisp(textRaw, answerRaw) {
-  var answerExample = wordChoice(answerRaw);
-  var exampleNum = Math.floor(Math.random() * answerExample.length);
-  judgeDispProcess('次の問題に行きましょう！', 'cheat');
-  incorrectSentences.push({
-    question: questionsArray[count].replace(/\<br\>/, '　'),
-    yourAnswer: textRaw,
-    answerRaw: answerRaw,
-    answerExample: answerExample[exampleNum]
-  });
-  setTimeout(function () {
-    isCheated = false;
-    nextQuestion(questionsArray);
-  }, 1000);
-}
-
-function judgeDispProcess(text, className) {
-  judgeDisplay.className = className;
-  (0, _jquery2.default)('#cheat-zone').addClass('hidden');
-  (0, _jquery2.default)('#cheat-display').html('');
-  (0, _jquery2.default)('#judge-zone').removeClass('hidden');
-  (0, _jquery2.default)('#judge-display').html(text);
-}
-
-function nextQuestion(array) {
-  count++;
-  if (count < finishCount) {
-    (0, _jquery2.default)('#question-display').html(array[count]);
-    (0, _jquery2.default)('#answer-text').val('');
-    (0, _jquery2.default)('#answer-text').focus();
-    isStarted = true;
-    (0, _jquery2.default)('#judge-zone').addClass('hidden');
-    (0, _jquery2.default)('#judge-display').html('');
-    (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
-  } else {
-    finish();
-  }
-}
-
-function finish() {
-  (0, _jquery2.default)('#stage-zone').addClass('hidden');
-  (0, _jquery2.default)('#result-zone').removeClass('hidden');
-  (0, _jquery2.default)('#judge-display').html('');
-  isCheated = true;
-  var incorrectCount = incorrectSentences.length;
-  if (!isRetried) {
-    isRecorded = true;
-  }
-  if (incorrectCount === 0) {
-    isRetried = false;
-    (0, _jquery2.default)('#result-display').html('\u5168\u554F\u6B63\u89E3\uFF01<br>' + count + '\u554F\u4E2D: \u6B63\u89E3: ' + count + '\u554F \u4E0D\u6B63\u89E3: 0\u554F<br>\u6B63\u89E3\u7387\u306F100\uFF05\u3067\u3057\u305F\uFF01');
-    (0, _jquery2.default)('#incorrect-display').html('あなたは全問正解しました。');
-  } else {
-    isRetried = true;
-    var correctCount = count - incorrectCount;
-    var correctAvg = Math.floor(correctCount / count * 100);
-    (0, _jquery2.default)('#result-display').html(count + '\u554F\u4E2D: \u6B63\u89E3: ' + correctCount + '\u554F \u4E0D\u6B63\u89E3: ' + incorrectCount + '\u554F<br>\u6B63\u89E3\u7387\u306F' + correctAvg + '\uFF05\u3067\u3057\u305F\uFF01');
-    var storedText = '<h3>間違えた問題一覧</h3>';
-    for (var i = 0; i < incorrectSentences.length; i++) {
-      storedText += '<p>\u554F\u984C\u6587: ' + incorrectSentences[i].question + '<br>\n                  \u3042\u306A\u305F\u306E\u89E3\u7B54: ' + incorrectSentences[i].yourAnswer + '<br>\n                  \u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089: ' + incorrectSentences[i].answerExample + '</p>';
-    }
-    (0, _jquery2.default)('#incorrect-display').html(storedText);
-  }
-  isStarted = false;
-}
-
-function incorrectRetry() {
-  (0, _jquery2.default)('#result-zone').addClass('hidden');
-  (0, _jquery2.default)('#stage-zone').removeClass('hidden');
-  (0, _jquery2.default)('#answer-text').val('');
-  (0, _jquery2.default)('#answer-text').focus();
-  (0, _jquery2.default)('#judge-zone').addClass('hidden');
-  (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
-  questionsArray = [];
-  answersArray = [];
-  incorrectSentences.forEach(function (value) {
-    questionsArray.push(value.question);
-    answersArray.push(value.answerRaw);
-  });
-  incorrectSentences = [];
-  count = 0;
-  finishCount = questionsArray.length;
-  (0, _jquery2.default)('#question-display').html(questionsArray[count]);
-  isStarted = true;
-  isCheated = false;
-}
-
-function replacer(str) {
-  str = str.trim();
-  str = str.replace(/\,/g, ', ');
-  str = str.replace(/\./g, '. ');
-  str = str.replace(/\?/g, '? ');
-  str = str.replace(/\!/g, '! ');
-  str = str.replace(/\s{2,}/g, ' ');
-  str = str.replace(/aren\'t/g, 'are not');
-  str = str.replace(/Aren\'t/g, 'Are not');
-  str = str.replace(/isn\'t/g, 'is not');
-  str = str.replace(/Isn\'t/g, 'Is not');
-  str = str.replace(/don\'t/g, 'do not');
-  str = str.replace(/Don\'t/g, 'Do not');
-  str = str.replace(/doesn\'t/g, 'does not');
-  str = str.replace(/Doesn\'t/g, 'Does not');
-  str = str.replace(/didn\'t/g, 'did not');
-  str = str.replace(/Didn\'t/g, 'Did not');
-  str = str.replace(/can\'t/g, 'cannot');
-  str = str.replace(/Can\'t/g, 'Cannot');
-  str = str.replace(/won\'t/g, 'will not');
-  str = str.replace(/Won\'t/g, 'Will not');
-  str = str.replace(/I\'m/g, 'I am');
-  str = str.replace(/he\'s/g, 'he is');
-  str = str.replace(/He\'s/g, 'He is');
-  str = str.replace(/she\'s/g, 'she is');
-  str = str.replace(/She\'s/g, 'She is');
-  str = str.replace(/it\'s/g, 'it is');
-  str = str.replace(/It\'s/g, 'It is');
-  str = str.replace(/that\'s/g, 'that is');
-  str = str.replace(/That\'s/g, 'That is');
-  str = str.replace(/what\'s/g, 'what is');
-  str = str.replace(/What\'s/g, 'What is');
-  str = str.replace(/I\'ll/g, 'I will');
-  str = str.replace(/you\'ll/g, 'you will');
-  str = str.replace(/You\'ll/g, 'You will');
-  str = str.replace(/let\'s/g, 'let us');
-  str = str.replace(/Let\'s/g, 'Let us');
-  return str;
-}
-
-function wordChoice(str) {
-  var tmpReplace = str;
-  var candidatesWords = [];
-  var matchCount = 0,
-      loopCount = 0;
-  var frontWord = void 0,
-      backWord = void 0;
-  var badSentence = false;
-
-  while (true) {
-    if (tmpReplace.indexOf('[') >= 0) {
-      frontWord = tmpReplace.slice(tmpReplace.indexOf('[') + 1, tmpReplace.indexOf('/')).trim();
-      backWord = tmpReplace.slice(tmpReplace.indexOf('/') + 1, tmpReplace.indexOf(']')).trim();
-      tmpReplace = tmpReplace.replace(/\[((\w(\'|\,|\.|\?|\!)*)+\s+)+\/(\s+(\w(\'|\,|\.|\?|\!)*)*)+\]/, '&&&');
-      candidatesWords[matchCount] = [frontWord, backWord];
-      matchCount++;
-    } else {
-      break;
-    }
-    if (loopCount > 10000) {
-      badSentence = true;
-      break;
-    }
-    loopCount++;
-  }
-
-  var candidateCount = Math.pow(2, matchCount);
-  var binary = '';
-  var sliceBinaries = [];
-  var tmpChoice = tmpReplace;
-  var candidatesSentences = [];
-
-  if (badSentence) {
-    str = '英文の変換処理を失敗しました。';
-    candidatesSentences = [str, str];
-    return candidatesSentences;
-  } else {
-    for (var i = 0; i < candidateCount; i++) {
-      binary = dumpBinary(i, matchCount);
-      for (var j = 0; j < matchCount; j++) {
-        sliceBinaries[j] = parseInt(binary.slice(j, j + 1));
-        tmpChoice = tmpChoice.replace(/\&{3}/, candidatesWords[j][sliceBinaries[j]]);
-        tmpChoice = tmpChoice.replace(/\s{2,}/, ' ');
-      }
-      candidatesSentences[i] = tmpChoice;
-      tmpChoice = tmpReplace;
-    }
-  }
-
-  return candidatesSentences;
-}
-
-function dumpBinary(num, digit) {
-  var strBinary = '';
-  var digitBinary = Math.pow(2, digit) - 1;
-  while (digitBinary) {
-    strBinary = (num & 1) + strBinary;
-    num >>>= 1;
-    digitBinary >>>= 1;
-  }
-  return strBinary;
-}
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10895,6 +10433,502 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(2);
+module.exports = __webpack_require__(3);
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(0);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var judgeDisplay = document.getElementById('judge-display');
+var sentences = (0, _jquery2.default)('#sentences').data('sentences');
+var flag = (0, _jquery2.default)('#course-flag').data('flag');
+var storedGradeAndStage = [];
+var questionsArray = [];
+var answersArray = [];
+var incorrectSentences = [];
+var isClicked = void 0,
+    isStarted = void 0,
+    isCheated = void 0,
+    isRetried = void 0,
+    isRecorded = void 0;
+var count = void 0,
+    finishCount = void 0;
+var countDownTime = 3;
+
+(0, _jquery2.default)('.tab li').click(function () {
+  // タブの処理
+  var index = (0, _jquery2.default)('.tab li').index(this);
+
+  (0, _jquery2.default)('.content-wrap').addClass('disp-none');
+  (0, _jquery2.default)('.content-wrap').eq(index).removeClass('disp-none');
+
+  (0, _jquery2.default)('.tab li').removeClass('select');
+  (0, _jquery2.default)(this).addClass('select');
+});
+
+(0, _jquery2.default)('.open').each(function (i, e) {
+  // 問題文をセットしてモーダルウィンドウを開く
+  var button = (0, _jquery2.default)(e);
+  button.click(function () {
+    var grade = button.data('grade');
+    var stage = button.data('stage');
+    initialize();
+    storedGradeAndStage = setStage(grade, stage);
+    (0, _jquery2.default)('#overlay, #modal-contents').fadeIn();
+  });
+});
+
+(0, _jquery2.default)('#close, #stage-select-button').click(function () {
+  (0, _jquery2.default)('#overlay, #modal-contents').fadeOut();
+});
+
+locateCenter();
+(0, _jquery2.default)(window).resize(locateCenter);
+
+function locateCenter() {
+  // モーダルウィンドウを中央配置するための関数
+  var w = (0, _jquery2.default)(window).width();
+  var h = (0, _jquery2.default)(window).height();
+  var cw = (0, _jquery2.default)('#modal-contents').outerWidth();
+  var ch = (0, _jquery2.default)('#modal-contents').outerHeight();
+  (0, _jquery2.default)('#modal-contents').css({
+    'left': (w - cw) / 2 + 'px',
+    'top': (h - ch) / 2 + 'px'
+  });
+}
+
+(0, _jquery2.default)('#question-display').click(function () {
+  if (isClicked) {
+    (0, _jquery2.default)('#answer-text').focus();
+    isClicked = false;
+    count = 0;
+    countDown(countDownTime);
+  }
+});
+
+(0, _jquery2.default)('#answer-text').keypress(function (e) {
+  if (isStarted && e.which === 13) {
+    isStarted = false;
+    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
+  }
+});
+
+(0, _jquery2.default)('#answer-button').click(function () {
+  if (isStarted) {
+    isStarted = false;
+    (0, _jquery2.default)('#answer-text').focus();
+    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
+  }
+});
+
+(0, _jquery2.default)('#cheat-button').click(function () {
+  if (!isCheated) {
+    isCheated = true;
+    var answerExample = wordChoice(answersArray[count]);
+    var exampleNum = Math.floor(Math.random() * answerExample.length);
+    (0, _jquery2.default)('#answer-text').focus();
+    (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:<br>' + answerExample[exampleNum]);
+  }
+});
+
+(0, _jquery2.default)('#record-button').click(function () {
+  if (isRecorded) {
+    alert('今の結果を記録しました。');
+    isRecorded = false;
+  } else {
+    alert('今の結果はすでに記録しています。');
+  }
+});
+
+(0, _jquery2.default)('#retry-button').click(function () {
+  initialize();
+  setStage(storedGradeAndStage[0], storedGradeAndStage[1]);
+  (0, _jquery2.default)('#result-zone').addClass('hidden');
+  (0, _jquery2.default)('#stage-zone').removeClass('hidden');
+});
+
+(0, _jquery2.default)('#incorrect-retry-button').click(function () {
+  if (isRetried) {
+    incorrectRetry();
+  } else {
+    alert('あなたは全問正解しました。');
+  }
+});
+
+(0, _jquery2.default)('#incorrect-check-button').click(function () {
+  (0, _jquery2.default)('#result-zone').addClass('hidden');
+  (0, _jquery2.default)('#incorrect-display-zone').removeClass('hidden');
+});
+
+(0, _jquery2.default)('#done').click(function () {
+  (0, _jquery2.default)('#incorrect-display-zone').addClass('hidden');
+  (0, _jquery2.default)('#result-zone').removeClass('hidden');
+});
+
+function initialize() {
+  (0, _jquery2.default)('#stage-zone').removeClass('hidden');
+  (0, _jquery2.default)('#judge-zone').addClass('hidden');
+  (0, _jquery2.default)('#cheat-zone').addClass('hidden');
+  (0, _jquery2.default)('#result-zone').addClass('hidden');
+  (0, _jquery2.default)('#incorrect-display-zone').addClass('hidden');
+  (0, _jquery2.default)('#question-display').html('ここをクリックすると問題が出ます。');
+  (0, _jquery2.default)('#question-display').addClass('non-started');
+  (0, _jquery2.default)('#answer-text').val('');
+  (0, _jquery2.default)('#judge-display').html('');
+  (0, _jquery2.default)('#cheat-display').html('');
+  (0, _jquery2.default)('#result-display').html('');
+  (0, _jquery2.default)('#incorrect-display').html('');
+  questionsArray = [];
+  answersArray = [];
+  incorrectSentences = [];
+  isClicked = true;
+  isStarted = false;
+  isCheated = false;
+  isRetried = false;
+  isRecorded = false;
+  count = 0;
+  finishCount = flag === 'select' ? 10 : parseInt((0, _jquery2.default)('#random-num').val());
+}
+
+function setStage(grade, stage) {
+  var gradeNum = parseInt(grade);
+  var stageNum = parseInt(stage);
+  var gradeAndStage = [gradeNum, stageNum];
+  if (flag === 'select') {
+    var tmpQuestion = void 0,
+        tmpAnswer = void 0;
+    var num = 0;
+    // shuffle(sentencesArray);
+    for (var i = 0; i < sentences.length; i++) {
+      if (grade === sentences[i].grade && stage === sentences[i].stage) {
+        tmpQuestion = sentences[i].question;
+        tmpAnswer = sentences[i].answer;
+        questionsArray[num] = tmpQuestion;
+        answersArray[num] = tmpAnswer;
+        num++;
+      }
+    }
+  } else {
+    shuffle(sentences);
+    questionsArray = sentences.map(function (value) {
+      return value.question;
+    });
+    answersArray = sentences.map(function (value) {
+      return value.answer;
+    });
+  }
+  return gradeAndStage;
+}
+
+function countDown(countDownTime) {
+  if (questionsArray.length === 0) {
+    (0, _jquery2.default)('#question-display').removeClass('non-started');
+    (0, _jquery2.default)('#question-display').html('準備中です。');
+    return;
+  }
+  (0, _jquery2.default)('#question-display').html(countDownTime--);
+  var timerId = setTimeout(function () {
+    countDown(countDownTime);
+  }, 1000);
+  if (countDownTime < 0) {
+    clearTimeout(timerId);
+    (0, _jquery2.default)('#question-display').removeClass('non-started');
+    (0, _jquery2.default)('#question-display').html(questionsArray[count]);
+    (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
+    isStarted = true;
+  }
+}
+
+function shuffle(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = array[i];
+    array[i] = array[j];
+    array[j] = tmp;
+  }
+}
+
+function judgement(textRaw, answerRaw) {
+  var textReplace = replacer(textRaw);
+  var answerReplace = replacer(answerRaw);
+
+  if (isCheated) {
+    // カンニングボタンを押したときの処理
+    cheatDisp(textRaw, answerRaw);
+  } else if (answerReplace.indexOf('[') >= 0) {
+    // 使用できる単語が複数ある場合の処理
+    var answersCandidates = wordChoice(answerReplace);
+    var correctFlag = false;
+    for (var i = 0; i < answersCandidates.length; i++) {
+      if (textReplace === answersCandidates[i]) {
+        correctFlag = true;
+        break;
+      }
+    }
+    correctFlag ? correctDisp() : incorrectDisp(textRaw, answerRaw);
+  } else {
+    if (textReplace === answerReplace) {
+      correctDisp();
+    } else {
+      incorrectDisp(textRaw, answerRaw);
+    }
+  }
+}
+
+function correctDisp() {
+  judgeDispProcess('正解です！', 'correct');
+  setTimeout(function () {
+    nextQuestion(questionsArray);
+  }, 1000);
+}
+
+function incorrectDisp(textRaw, answerRaw) {
+  var answerExample = wordChoice(answerRaw);
+  var exampleNum = Math.floor(Math.random() * answerExample.length);
+  var incorrectText = '\u4E0D\u6B63\u89E3\u3067\u3059\uFF01<br><span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54:</span><br>' + textRaw + '<br><span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:</span><br>' + answerExample[exampleNum];
+  judgeDispProcess(incorrectText, 'incorrect');
+  incorrectSentences.push({
+    question: questionsArray[count].replace(/\<br\>/, '　'),
+    yourAnswer: textRaw,
+    answerRaw: answerRaw,
+    answerExample: answerExample[exampleNum]
+  });
+  setTimeout(function () {
+    nextQuestion(questionsArray);
+  }, 1000);
+}
+
+function cheatDisp(textRaw, answerRaw) {
+  var answerExample = wordChoice(answerRaw);
+  var exampleNum = Math.floor(Math.random() * answerExample.length);
+  judgeDispProcess('次の問題に行きましょう！', 'cheat');
+  incorrectSentences.push({
+    question: questionsArray[count].replace(/\<br\>/, '　'),
+    yourAnswer: textRaw,
+    answerRaw: answerRaw,
+    answerExample: answerExample[exampleNum]
+  });
+  setTimeout(function () {
+    isCheated = false;
+    nextQuestion(questionsArray);
+  }, 1000);
+}
+
+function judgeDispProcess(text, className) {
+  judgeDisplay.className = className;
+  (0, _jquery2.default)('#cheat-zone').addClass('hidden');
+  (0, _jquery2.default)('#cheat-display').html('');
+  (0, _jquery2.default)('#judge-zone').removeClass('hidden');
+  (0, _jquery2.default)('#judge-display').html(text);
+}
+
+function nextQuestion(array) {
+  count++;
+  if (count < finishCount) {
+    (0, _jquery2.default)('#question-display').html(array[count]);
+    (0, _jquery2.default)('#answer-text').val('');
+    (0, _jquery2.default)('#answer-text').focus();
+    isStarted = true;
+    (0, _jquery2.default)('#judge-zone').addClass('hidden');
+    (0, _jquery2.default)('#judge-display').html('');
+    (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
+  } else {
+    finish();
+  }
+}
+
+function finish() {
+  (0, _jquery2.default)('#stage-zone').addClass('hidden');
+  (0, _jquery2.default)('#result-zone').removeClass('hidden');
+  (0, _jquery2.default)('#judge-display').html('');
+  isCheated = true;
+  var incorrectCount = incorrectSentences.length;
+  if (!isRetried) {
+    isRecorded = true;
+  }
+  if (incorrectCount === 0) {
+    isRetried = false;
+    (0, _jquery2.default)('#result-display').html('\u5168\u554F\u6B63\u89E3\uFF01<br>' + count + '\u554F\u4E2D: \u6B63\u89E3: ' + count + '\u554F \u4E0D\u6B63\u89E3: 0\u554F<br>\u6B63\u89E3\u7387\u306F100\uFF05\u3067\u3057\u305F\uFF01');
+    (0, _jquery2.default)('#incorrect-display').html('あなたは全問正解しました。');
+  } else {
+    isRetried = true;
+    var correctCount = count - incorrectCount;
+    var correctAvg = Math.floor(correctCount / count * 100);
+    (0, _jquery2.default)('#result-display').html(count + '\u554F\u4E2D: \u6B63\u89E3: ' + correctCount + '\u554F \u4E0D\u6B63\u89E3: ' + incorrectCount + '\u554F<br>\u6B63\u89E3\u7387\u306F' + correctAvg + '\uFF05\u3067\u3057\u305F\uFF01');
+    var storedText = '<h3>間違えた問題一覧</h3>';
+    for (var i = 0; i < incorrectSentences.length; i++) {
+      storedText += '<p>\u554F\u984C\u6587: ' + incorrectSentences[i].question + '<br>\n                  \u3042\u306A\u305F\u306E\u89E3\u7B54: ' + incorrectSentences[i].yourAnswer + '<br>\n                  \u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089: ' + incorrectSentences[i].answerExample + '</p>';
+    }
+    (0, _jquery2.default)('#incorrect-display').html(storedText);
+  }
+  isStarted = false;
+}
+
+function incorrectRetry() {
+  (0, _jquery2.default)('#result-zone').addClass('hidden');
+  (0, _jquery2.default)('#stage-zone').removeClass('hidden');
+  (0, _jquery2.default)('#answer-text').val('');
+  (0, _jquery2.default)('#answer-text').focus();
+  (0, _jquery2.default)('#judge-zone').addClass('hidden');
+  (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
+  questionsArray = [];
+  answersArray = [];
+  incorrectSentences.forEach(function (value) {
+    questionsArray.push(value.question);
+    answersArray.push(value.answerRaw);
+  });
+  incorrectSentences = [];
+  count = 0;
+  finishCount = questionsArray.length;
+  (0, _jquery2.default)('#question-display').html(questionsArray[count]);
+  isStarted = true;
+  isCheated = false;
+}
+
+function replacer(str) {
+  str = str.trim();
+  str = str.replace(/\,/g, ', ');
+  str = str.replace(/\./g, '. ');
+  str = str.replace(/\?/g, '? ');
+  str = str.replace(/\!/g, '! ');
+  str = str.replace(/\s{2,}/g, ' ');
+  str = str.replace(/aren\'t/g, 'are not');
+  str = str.replace(/Aren\'t/g, 'Are not');
+  str = str.replace(/isn\'t/g, 'is not');
+  str = str.replace(/Isn\'t/g, 'Is not');
+  str = str.replace(/don\'t/g, 'do not');
+  str = str.replace(/Don\'t/g, 'Do not');
+  str = str.replace(/doesn\'t/g, 'does not');
+  str = str.replace(/Doesn\'t/g, 'Does not');
+  str = str.replace(/didn\'t/g, 'did not');
+  str = str.replace(/Didn\'t/g, 'Did not');
+  str = str.replace(/can\'t/g, 'cannot');
+  str = str.replace(/Can\'t/g, 'Cannot');
+  str = str.replace(/won\'t/g, 'will not');
+  str = str.replace(/Won\'t/g, 'Will not');
+  str = str.replace(/I\'m/g, 'I am');
+  str = str.replace(/he\'s/g, 'he is');
+  str = str.replace(/He\'s/g, 'He is');
+  str = str.replace(/she\'s/g, 'she is');
+  str = str.replace(/She\'s/g, 'She is');
+  str = str.replace(/it\'s/g, 'it is');
+  str = str.replace(/It\'s/g, 'It is');
+  str = str.replace(/that\'s/g, 'that is');
+  str = str.replace(/That\'s/g, 'That is');
+  str = str.replace(/what\'s/g, 'what is');
+  str = str.replace(/What\'s/g, 'What is');
+  str = str.replace(/I\'ll/g, 'I will');
+  str = str.replace(/you\'ll/g, 'you will');
+  str = str.replace(/You\'ll/g, 'You will');
+  str = str.replace(/let\'s/g, 'let us');
+  str = str.replace(/Let\'s/g, 'Let us');
+  return str;
+}
+
+function wordChoice(str) {
+  var tmpReplace = str;
+  var candidatesWords = [];
+  var matchCount = 0,
+      loopCount = 0;
+  var frontWord = void 0,
+      backWord = void 0;
+  var badSentence = false;
+
+  while (true) {
+    if (tmpReplace.indexOf('[') >= 0) {
+      frontWord = tmpReplace.slice(tmpReplace.indexOf('[') + 1, tmpReplace.indexOf('/')).trim();
+      backWord = tmpReplace.slice(tmpReplace.indexOf('/') + 1, tmpReplace.indexOf(']')).trim();
+      tmpReplace = tmpReplace.replace(/\[((\w(\'|\,|\.|\?|\!)*)+\s+)+\/(\s+(\w(\'|\,|\.|\?|\!)*)*)+\]/, '&&&');
+      candidatesWords[matchCount] = [frontWord, backWord];
+      matchCount++;
+    } else {
+      break;
+    }
+    if (loopCount > 10000) {
+      badSentence = true;
+      break;
+    }
+    loopCount++;
+  }
+
+  var candidateCount = Math.pow(2, matchCount);
+  var binary = '';
+  var sliceBinaries = [];
+  var tmpChoice = tmpReplace;
+  var candidatesSentences = [];
+
+  if (badSentence) {
+    str = '英文の変換処理を失敗しました。';
+    candidatesSentences = [str, str];
+    return candidatesSentences;
+  } else {
+    for (var i = 0; i < candidateCount; i++) {
+      binary = dumpBinary(i, matchCount);
+      for (var j = 0; j < matchCount; j++) {
+        sliceBinaries[j] = parseInt(binary.slice(j, j + 1));
+        tmpChoice = tmpChoice.replace(/\&{3}/, candidatesWords[j][sliceBinaries[j]]);
+        tmpChoice = tmpChoice.replace(/\s{2,}/, ' ');
+      }
+      candidatesSentences[i] = tmpChoice;
+      tmpChoice = tmpReplace;
+    }
+  }
+
+  return candidatesSentences;
+}
+
+function dumpBinary(num, digit) {
+  var strBinary = '';
+  var digitBinary = Math.pow(2, digit) - 1;
+  while (digitBinary) {
+    strBinary = (num & 1) + strBinary;
+    num >>>= 1;
+    digitBinary >>>= 1;
+  }
+  return strBinary;
+}
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _jquery = __webpack_require__(0);
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var selects = (0, _jquery2.default)('#select-value').data('selects');
+
+(0, _jquery2.default)('#post-grade').change(function () {
+  var selectValue = parseInt((0, _jquery2.default)('#post-grade').val());
+  var selectHtml = '';
+  selects.forEach(function (s) {
+    if (selectValue === s.grade) {
+      selectHtml += '<option value="' + s.stage + '">' + s.text + '</option>';
+    }
+  });
+  (0, _jquery2.default)('#post-stage').html(selectHtml);
+});
 
 /***/ })
 /******/ ]);

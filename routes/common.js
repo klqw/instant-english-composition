@@ -86,47 +86,7 @@ function pushArray(array) {
   array.push({ grade: 99, stage: 99, text: 'すべての範囲でランダム出題' });
 }
 
-/*
-function replacer(str) {
-  str = str.trim();
-  str = str.replace(/\,/g, ', ');
-  str = str.replace(/\./g, '. ');
-  str = str.replace(/\?/g, '? ');
-  str = str.replace(/\!/g, '! ');
-  str = str.replace(/\s{2,}/g, ' ');
-  str = str.replace(/aren\'t/g, 'are not');
-  str = str.replace(/Aren\'t/g, 'Are not');
-  str = str.replace(/isn\'t/g, 'is not');
-  str = str.replace(/Isn\'t/g, 'Is not');
-  str = str.replace(/don\'t/g, 'do not');
-  str = str.replace(/Don\'t/g, 'Do not');
-  str = str.replace(/doesn\'t/g, 'does not');
-  str = str.replace(/Doesn\'t/g, 'Does not');
-  str = str.replace(/didn\'t/g, 'did not');
-  str = str.replace(/Didn\'t/g, 'Did not');
-  str = str.replace(/can\'t/g, 'cannot');
-  str = str.replace(/Can\'t/g, 'Cannot');
-  str = str.replace(/won\'t/g, 'will not');
-  str = str.replace(/Won\'t/g, 'Will not');
-  str = str.replace(/I\'m/g, 'I am');
-  str = str.replace(/he\'s/g, 'he is');
-  str = str.replace(/He\'s/g, 'He is');
-  str = str.replace(/she\'s/g, 'she is');
-  str = str.replace(/She\'s/g, 'She is');
-  str = str.replace(/it\'s/g, 'it is');
-  str = str.replace(/It\'s/g, 'It is');
-  str = str.replace(/that\'s/g, 'that is');
-  str = str.replace(/That\'s/g, 'That is');
-  str = str.replace(/what\'s/g, 'what is');
-  str = str.replace(/What\'s/g, 'What is');
-  str = str.replace(/I\'ll/g, 'I will');
-  str = str.replace(/you\'ll/g, 'you will');
-  str = str.replace(/You\'ll/g, 'You will');
-  str = str.replace(/let\'s/g, 'let us');
-  str = str.replace(/Let\'s/g, 'Let us');
-  return str;
-}
-*/
+
 
 module.exports = {
   pushArray: pushArray

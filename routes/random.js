@@ -1,13 +1,13 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
-const commons = require('./commons');
+const common = require('./common');
 const Sentence = require('../models/sentence');
 
 const flag = 'random';
 const title = 'ランダム出題コース';
 const buttons = [];
-commons.pushArray(buttons);
+common.pushArray(buttons);
 
 router.get('/', (req, res, next) => {
   Sentence.findAll().then((sentences) => {
