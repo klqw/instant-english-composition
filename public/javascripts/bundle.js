@@ -10459,10 +10459,11 @@ var judgeDisplay = document.getElementById('judge-display');
 var sentences = (0, _jquery2.default)('#sentences').data('sentences');
 var userId = (0, _jquery2.default)('#userid').data('userid') || '';
 var course = (0, _jquery2.default)('#course').data('course');
-var storedGradeAndStage = [];
-var storedCorrectAndIncorrect = [];
-var setSentences = [];
-var incorrectSentences = [];
+var countDownTime = 3;
+var storedGradeAndStage = void 0;
+var storedCorrectAndIncorrect = void 0;
+var setSentences = void 0;
+var incorrectSentences = void 0;
 var incorrectText = void 0;
 var isClicked = void 0,
     isStarted = void 0,
@@ -10471,7 +10472,6 @@ var isClicked = void 0,
     isRecorded = void 0;
 var count = void 0,
     finishCount = void 0;
-var countDownTime = 3;
 
 (0, _jquery2.default)('.tab li').click(function () {
   // タブの処理
@@ -10553,7 +10553,6 @@ function locateCenter() {
 (0, _jquery2.default)('#record-button').click(function () {
   if (isRecorded) {
     isRecorded = false;
-    incorrectText = '1&1&あ&a&A|1&2&い&i&I|1&3&う&u&U';
     _jquery2.default.post('/records/recording', {
       course: course,
       grade: storedGradeAndStage[0],
@@ -10611,6 +10610,7 @@ function initialize() {
   (0, _jquery2.default)('#incorrect-display').html('');
   setSentences = [];
   incorrectSentences = [];
+  incorrectText = '';
   isClicked = true;
   isStarted = false;
   isCheated = false;
@@ -10622,18 +10622,16 @@ function initialize() {
 
 function setStage(grade, stage) {
   var gradeAndStage = [grade, stage];
-  var tmpElement = {};
   if (course === 'select') {
     // shuffle(sentencesArray);
     sentences.forEach(function (e) {
       if (grade === e.grade && stage === e.stage) {
-        tmpElement = {
+        setSentences.push({
           grade: e.grade,
           stage: e.stage,
           question: e.question,
           answer: e.answer
-        };
-        setSentences.push(tmpElement);
+        });
       }
     });
     console.log(setSentences);
@@ -10641,13 +10639,12 @@ function setStage(grade, stage) {
     shuffle(sentences);
     if (grade === 99) {
       sentences.forEach(function (e) {
-        tmpElement = {
+        setSentences.push({
           grade: e.grade,
           stage: e.stage,
           question: e.question,
           answer: e.answer
-        };
-        setSentences.push(tmpElement);
+        });
       });
       console.log(setSentences);
     } else {
@@ -10658,16 +10655,14 @@ function setStage(grade, stage) {
 }
 
 function setRandomCourse(grade) {
-  var tmpElement = void 0;
   sentences.forEach(function (e) {
     if (grade === e.grade) {
-      tmpElement = {
+      setSentences.push({
         grade: e.grade,
         stage: e.stage,
         question: e.question,
         answer: e.answer
-      };
-      setSentences.push(tmpElement);
+      });
     }
   });
   console.log(setSentences);
@@ -10741,6 +10736,8 @@ function incorrectDisp(textRaw, answerRaw) {
   var incorrectText = '\u4E0D\u6B63\u89E3\u3067\u3059\uFF01<br><span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54:</span><br>' + textRaw + '<br><span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:</span><br>' + answerExample[exampleNum];
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
+    grade: setSentences[count].grade,
+    stage: setSentences[count].stage,
     question: setSentences[count].question,
     yourAnswer: textRaw,
     answerRaw: answerRaw,
@@ -10756,6 +10753,8 @@ function cheatDisp(textRaw, answerRaw) {
   var exampleNum = Math.floor(Math.random() * answerExample.length);
   judgeDispProcess('次の問題に行きましょう！', 'cheat');
   incorrectSentences.push({
+    grade: setSentences[count].grade,
+    stage: setSentences[count].stage,
     question: setSentences[count].question,
     yourAnswer: textRaw,
     answerRaw: answerRaw,
@@ -10798,6 +10797,9 @@ function finish() {
   var incorrectCount = incorrectSentences.length;
   if (!isRetried) {
     storedCorrectAndIncorrect = [finishCount - incorrectCount, incorrectCount];
+    incorrectSentences.forEach(function (e) {
+      incorrectText += e.grade + '&&&' + e.stage + '&&&' + recordReplacer(e.question) + '&&&' + (recordReplacer(e.yourAnswer) + '&&&' + recordReplacer(e.answerExample) + '|||');
+    });
     isRecorded = true;
   }
   if (incorrectCount === 0) {
@@ -10826,15 +10828,13 @@ function incorrectRetry() {
   (0, _jquery2.default)('#judge-zone').addClass('hidden');
   (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
   setSentences = [];
-  var tmpElement = {};
   incorrectSentences.forEach(function (e) {
-    tmpElement = {
-      grade: storedGradeAndStage[0],
-      stage: storedGradeAndStage[1],
+    setSentences.push({
+      grade: e.grade,
+      stage: e.stage,
       question: e.question,
       answer: e.answerRaw
-    };
-    setSentences.push(tmpElement);
+    });
   });
   incorrectSentences = [];
   count = 0;
@@ -10881,6 +10881,17 @@ function replacer(str) {
   str = str.replace(/You\'ll/g, 'You will');
   str = str.replace(/let\'s/g, 'let us');
   str = str.replace(/Let\'s/g, 'Let us');
+  return str;
+}
+
+function recordReplacer(str) {
+  str = str.trim();
+  if (!str) {
+    str = '(tmp)';
+  }
+  str = str.replace(/\&{3,}/g, '(tmp)');
+  str = str.replace(/\|{3,}/g, '(tmp)');
+  str = str.slice(0, 255);
   return str;
 }
 

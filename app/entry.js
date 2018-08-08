@@ -5,14 +5,14 @@ const judgeDisplay = document.getElementById('judge-display');
 const sentences = $('#sentences').data('sentences');
 const userId = $('#userid').data('userid') || '';
 const course = $('#course').data('course');
-let storedGradeAndStage = [];
-let storedCorrectAndIncorrect = [];
-let setSentences = [];
-let incorrectSentences = [];
+const countDownTime = 3;
+let storedGradeAndStage;
+let storedCorrectAndIncorrect;
+let setSentences;
+let incorrectSentences;
 let incorrectText;
 let isClicked, isStarted, isCheated, isRetried, isRecorded;
 let count, finishCount;
-const countDownTime = 3;
 
 $('.tab li').click(function() {  // タブの処理
   let index = $('.tab li').index(this);
@@ -91,7 +91,6 @@ $('#cheat-button').click(() => {
 $('#record-button').click(() => {
   if (isRecorded) {
     isRecorded = false;
-    incorrectText = '1&1&あ&a&A|1&2&い&i&I|1&3&う&u&U';
     $.post('/records/recording', {
       course: course,
       grade: storedGradeAndStage[0],
@@ -149,6 +148,7 @@ function initialize() {
   $('#incorrect-display').html('');
   setSentences = [];
   incorrectSentences = [];
+  incorrectText = '';
   isClicked = true;
   isStarted = false;
   isCheated = false;
@@ -160,18 +160,16 @@ function initialize() {
 
 function setStage(grade, stage) {
   const gradeAndStage = [grade, stage];
-  let tmpElement = {};
   if (course === 'select') {
     // shuffle(sentencesArray);
     sentences.forEach((e) => {
       if (grade === e.grade && stage === e.stage) {
-        tmpElement = {
+        setSentences.push({
           grade: e.grade,
           stage: e.stage,
           question: e.question,
           answer: e.answer
-        };
-        setSentences.push(tmpElement);
+        });
       }
     });
     console.log(setSentences);
@@ -179,13 +177,12 @@ function setStage(grade, stage) {
     shuffle(sentences);
     if (grade === 99) {
       sentences.forEach((e) => {
-        tmpElement = {
+        setSentences.push({
           grade: e.grade,
           stage: e.stage,
           question: e.question,
           answer: e.answer
-        };
-        setSentences.push(tmpElement);
+        });
       });
       console.log(setSentences);
     } else {
@@ -196,16 +193,14 @@ function setStage(grade, stage) {
 }
 
 function setRandomCourse(grade) {
-  let tmpElement;
   sentences.forEach((e) => {
     if (grade === e.grade) {
-      tmpElement = {
+      setSentences.push({
         grade: e.grade,
         stage: e.stage,
         question: e.question,
         answer: e.answer
-      };
-      setSentences.push(tmpElement);
+      });
     }
   });
   console.log(setSentences);
@@ -277,6 +272,8 @@ function incorrectDisp(textRaw, answerRaw) {
   const incorrectText = `不正解です！<br><span style="color: orange">あなたの解答:</span><br>${textRaw}<br><span style="color: orange">解答例はこちら:</span><br>${answerExample[exampleNum]}`;
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
+    grade: setSentences[count].grade,
+    stage: setSentences[count].stage,
     question: setSentences[count].question,
     yourAnswer: textRaw,
     answerRaw: answerRaw,
@@ -292,6 +289,8 @@ function cheatDisp(textRaw, answerRaw) {
   const exampleNum = Math.floor(Math.random() * answerExample.length);
   judgeDispProcess('次の問題に行きましょう！', 'cheat');
   incorrectSentences.push({
+    grade: setSentences[count].grade,
+    stage: setSentences[count].stage,
     question: setSentences[count].question,
     yourAnswer: textRaw,
     answerRaw: answerRaw,
@@ -334,6 +333,10 @@ function finish() {
   const incorrectCount = incorrectSentences.length;
   if (!isRetried) {
     storedCorrectAndIncorrect = [finishCount - incorrectCount, incorrectCount];
+    incorrectSentences.forEach((e) => {
+      incorrectText += `${e.grade}&&&${e.stage}&&&${recordReplacer(e.question)}&&&` +
+                       `${recordReplacer(e.yourAnswer)}&&&${recordReplacer(e.answerExample)}|||`;
+    });
     isRecorded = true;
   }
   if (incorrectCount === 0) {
@@ -365,15 +368,13 @@ function incorrectRetry() {
   $('#judge-zone').addClass('hidden');
   $('#cheat-zone').removeClass('hidden');
   setSentences = [];
-  let tmpElement = {};
   incorrectSentences.forEach((e) => {
-    tmpElement = {
-      grade: storedGradeAndStage[0],
-      stage: storedGradeAndStage[1],
+    setSentences.push({
+      grade: e.grade,
+      stage: e.stage,
       question: e.question,
       answer: e.answerRaw
-    };
-    setSentences.push(tmpElement);
+    });
   });
   incorrectSentences = [];
   count = 0;
@@ -420,6 +421,17 @@ function replacer(str) {
   str = str.replace(/You\'ll/g, 'You will');
   str = str.replace(/let\'s/g, 'let us');
   str = str.replace(/Let\'s/g, 'Let us');
+  return str;
+}
+
+function recordReplacer(str) {
+  str = str.trim();
+  if (!str) {
+    str = '(tmp)';
+  }
+  str = str.replace(/\&{3,}/g, '(tmp)');
+  str = str.replace(/\|{3,}/g, '(tmp)');
+  str = str.slice(0, 255);
   return str;
 }
 

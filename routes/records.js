@@ -19,29 +19,33 @@ router.post('/recording', authenticationEnsurer, (req, res, next) => {
     recordedBy: parseInt(req.body.recordedBy),
     recordedAt: recordedAt
   }).then((record) => {
-    const incorrectTexts = req.body.incorrectText.split('|'); // grade&stage&question&yourAnswer&correctAnswer|
-    const consoleText = req.body.incorrectTexts;
-    console.log(consoleText);
+    const incorrectTexts = req.body.incorrectText.split('|||'); // grade&&&stage&&&question&&&yourAnswer&&&correctAnswer|||
+    incorrectTexts.pop();
     const incorrect = [];
     const recordId = record.recordId;
-    let tmpElement = [];
-    let element = {}, grade, stage, question, yourAnswer, correctAnswer;
-    incorrectTexts.forEach((e) => {
-      tmpElement = e.split('&');
-      element = {
-        recordId: recordId,
-        grade: parseInt(tmpElement[0]),
-        stage: parseInt(tmpElement[1]),
-        question: tmpElement[2],
-        yourAnswer: tmpElement[3],
-        correctAnswer: tmpElement[4]
-      }
-      incorrect.push(element);
-    });
-    Incorrect.bulkCreate(incorrect).then(() => {
-      res.json({ status: 'OK', incorrect: incorrect });
+    const promise = converter(incorrectTexts, incorrect, recordId);
+    Promise.all(promise).then((incorrect) => {
+      Incorrect.bulkCreate(incorrect).then(() => {
+        res.json({ status: 'OK', incorrect: incorrect });
+      });
     });
   });
 });
+
+function converter(rawArray, convertArray, recordId) {
+  let tmpElement;
+  rawArray.forEach((e) => {
+    tmpElement = e.split('&&&');
+    convertArray.push({
+      recordId: recordId,
+      grade: parseInt(tmpElement[0]),
+      stage: parseInt(tmpElement[1]),
+      question: tmpElement[2].replace(/\(tmp\)/g, ' '),
+      yourAnswer: tmpElement[3].replace(/\(tmp\)/g, ' '),
+      correctAnswer: tmpElement[4].replace(/\(tmp\)/g, ' ')
+    });
+  });
+  return convertArray;
+}
 
 module.exports = router;

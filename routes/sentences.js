@@ -86,21 +86,17 @@ function answerCheck(str) {
 
 function converter(rawArray, convertArray, createdBy) {
   let tmpElement;
-  let element = {};
   rawArray.forEach((e) => {
     tmpElement = e.split('|');
-    element = {
+    convertArray.push({
       grade: parseInt(tmpElement[0]),
       stage: parseInt(tmpElement[1]),
       question: tmpElement[2],
       answer: tmpElement[3],
       createdBy: createdBy
-    };
-    convertArray.push(element);
+    });
   });
-
   return convertArray;
 }
-
 
 module.exports = router;
