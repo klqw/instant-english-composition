@@ -4,7 +4,7 @@ const router = express.Router();
 const common = require('./common');
 const Sentence = require('../models/sentence');
 
-const flag = 'random';
+const course = 'random';
 const title = 'ランダム出題コース';
 const buttons = [];
 common.pushArray(buttons);
@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
     res.render('random', {
       sentences: sentences,
       user: req.user,
-      flag: flag,
+      course: course,
       title: title,
       buttons: buttons
     });

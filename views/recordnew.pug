@@ -1,0 +1,20 @@
+extends layout
+
+block content
+  form(method="post", action="/records/recording")
+    div
+      h5 コース
+      input(type="text" name="course")
+    div
+      h5 学年
+      input(type="text" name="grade")
+    div
+      h5 ステージ
+      input(type="text" name="stage")
+    div
+      h5 正解
+      input(type="text" name="correct")
+    div
+      h5 不正解
+      input(type="text" name="incorrect")
+    button(type="submit") 記録する

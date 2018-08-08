@@ -10457,11 +10457,13 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var judgeDisplay = document.getElementById('judge-display');
 var sentences = (0, _jquery2.default)('#sentences').data('sentences');
-var flag = (0, _jquery2.default)('#course-flag').data('flag');
+var userId = (0, _jquery2.default)('#userid').data('userid') || '';
+var course = (0, _jquery2.default)('#course').data('course');
 var storedGradeAndStage = [];
-var questionsArray = [];
-var answersArray = [];
+var storedCorrectAndIncorrect = [];
+var setSentences = [];
 var incorrectSentences = [];
+var incorrectText = void 0;
 var isClicked = void 0,
     isStarted = void 0,
     isCheated = void 0,
@@ -10491,6 +10493,7 @@ var countDownTime = 3;
     initialize();
     storedGradeAndStage = setStage(grade, stage);
     (0, _jquery2.default)('#overlay, #modal-contents').fadeIn();
+    console.log(storedGradeAndStage);
   });
 });
 
@@ -10525,7 +10528,7 @@ function locateCenter() {
 (0, _jquery2.default)('#answer-text').keypress(function (e) {
   if (isStarted && e.which === 13) {
     isStarted = false;
-    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
+    judgement((0, _jquery2.default)('#answer-text').val(), setSentences[count].answer);
   }
 });
 
@@ -10533,14 +10536,14 @@ function locateCenter() {
   if (isStarted) {
     isStarted = false;
     (0, _jquery2.default)('#answer-text').focus();
-    judgement((0, _jquery2.default)('#answer-text').val(), answersArray[count]);
+    judgement((0, _jquery2.default)('#answer-text').val(), setSentences[count].answer);
   }
 });
 
 (0, _jquery2.default)('#cheat-button').click(function () {
   if (!isCheated) {
     isCheated = true;
-    var answerExample = wordChoice(answersArray[count]);
+    var answerExample = wordChoice(setSentences[count].answer);
     var exampleNum = Math.floor(Math.random() * answerExample.length);
     (0, _jquery2.default)('#answer-text').focus();
     (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:<br>' + answerExample[exampleNum]);
@@ -10549,10 +10552,22 @@ function locateCenter() {
 
 (0, _jquery2.default)('#record-button').click(function () {
   if (isRecorded) {
-    alert('今の結果を記録しました。');
     isRecorded = false;
+    incorrectText = '1&1&あ&a&A|1&2&い&i&I|1&3&う&u&U';
+    _jquery2.default.post('/records/recording', {
+      course: course,
+      grade: storedGradeAndStage[0],
+      stage: storedGradeAndStage[1],
+      correct: storedCorrectAndIncorrect[0],
+      incorrect: storedCorrectAndIncorrect[1],
+      recordedBy: userId,
+      incorrectText: incorrectText
+    }, function (data) {
+      console.log(data);
+      alert('今回の結果を記録しました。');
+    });
   } else {
-    alert('今の結果はすでに記録しています。');
+    alert('今回の結果はすでに記録しています。');
   }
 });
 
@@ -10594,8 +10609,7 @@ function initialize() {
   (0, _jquery2.default)('#cheat-display').html('');
   (0, _jquery2.default)('#result-display').html('');
   (0, _jquery2.default)('#incorrect-display').html('');
-  questionsArray = [];
-  answersArray = [];
+  setSentences = [];
   incorrectSentences = [];
   isClicked = true;
   isStarted = false;
@@ -10603,74 +10617,64 @@ function initialize() {
   isRetried = false;
   isRecorded = false;
   count = 0;
-  finishCount = flag === 'select' ? 10 : parseInt((0, _jquery2.default)('#random-num').val());
+  finishCount = course === 'select' ? 10 : parseInt((0, _jquery2.default)('#random-num').val());
 }
 
 function setStage(grade, stage) {
   var gradeAndStage = [grade, stage];
-  if (flag === 'select') {
-    var tmpQuestion = void 0,
-        tmpAnswer = void 0;
+  var tmpElement = {};
+  if (course === 'select') {
     // shuffle(sentencesArray);
-    for (var i = 0; i < sentences.length; i++) {
-      if (grade === sentences[i].grade && stage === sentences[i].stage) {
-        tmpQuestion = sentences[i].question;
-        tmpAnswer = sentences[i].answer;
-        questionsArray.push(tmpQuestion);
-        answersArray.push(tmpAnswer);
+    sentences.forEach(function (e) {
+      if (grade === e.grade && stage === e.stage) {
+        tmpElement = {
+          grade: e.grade,
+          stage: e.stage,
+          question: e.question,
+          answer: e.answer
+        };
+        setSentences.push(tmpElement);
       }
-    }
-    console.log(questionsArray);
-    console.log(answersArray);
+    });
+    console.log(setSentences);
   } else {
     shuffle(sentences);
-    switch (grade) {
-      case 1:
-        setRandomCourse(grade);
-        console.log(questionsArray);
-        console.log(answersArray);
-        break;
-      case 2:
-        setRandomCourse(grade);
-        console.log(questionsArray);
-        console.log(answersArray);
-        break;
-      case 3:
-        setRandomCourse(grade);
-        console.log(questionsArray);
-        console.log(answersArray);
-        break;
-      default:
-        questionsArray = sentences.map(function (value) {
-          return value.question;
-        });
-        answersArray = sentences.map(function (value) {
-          return value.answer;
-        });
-        console.log(questionsArray);
-        console.log(answersArray);
-        break;
+    if (grade === 99) {
+      sentences.forEach(function (e) {
+        tmpElement = {
+          grade: e.grade,
+          stage: e.stage,
+          question: e.question,
+          answer: e.answer
+        };
+        setSentences.push(tmpElement);
+      });
+      console.log(setSentences);
+    } else {
+      setRandomCourse(grade);
     }
   }
-
   return gradeAndStage;
 }
 
 function setRandomCourse(grade) {
-  var tmpQuestion = void 0,
-      tmpAnswer = void 0;
-  for (var i = 0; i < sentences.length; i++) {
-    if (grade === sentences[i].grade) {
-      tmpQuestion = sentences[i].question;
-      tmpAnswer = sentences[i].answer;
-      questionsArray.push(tmpQuestion);
-      answersArray.push(tmpAnswer);
+  var tmpElement = void 0;
+  sentences.forEach(function (e) {
+    if (grade === e.grade) {
+      tmpElement = {
+        grade: e.grade,
+        stage: e.stage,
+        question: e.question,
+        answer: e.answer
+      };
+      setSentences.push(tmpElement);
     }
-  }
+  });
+  console.log(setSentences);
 }
 
 function countDown(countDownTime) {
-  if (questionsArray.length === 0) {
+  if (setSentences.length === 0) {
     (0, _jquery2.default)('#question-display').removeClass('non-started');
     (0, _jquery2.default)('#question-display').html('準備中です。');
     return;
@@ -10682,7 +10686,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     (0, _jquery2.default)('#question-display').removeClass('non-started');
-    (0, _jquery2.default)('#question-display').html(questionsArray[count]);
+    (0, _jquery2.default)('#question-display').html(setSentences[count].question);
     (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
     isStarted = true;
   }
@@ -10727,7 +10731,7 @@ function judgement(textRaw, answerRaw) {
 function correctDisp() {
   judgeDispProcess('正解です！', 'correct');
   setTimeout(function () {
-    nextQuestion(questionsArray);
+    nextQuestion();
   }, 1000);
 }
 
@@ -10737,13 +10741,13 @@ function incorrectDisp(textRaw, answerRaw) {
   var incorrectText = '\u4E0D\u6B63\u89E3\u3067\u3059\uFF01<br><span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54:</span><br>' + textRaw + '<br><span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089:</span><br>' + answerExample[exampleNum];
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
-    question: questionsArray[count].replace(/\<br\>/, '　'),
+    question: setSentences[count].question,
     yourAnswer: textRaw,
     answerRaw: answerRaw,
     answerExample: answerExample[exampleNum]
   });
   setTimeout(function () {
-    nextQuestion(questionsArray);
+    nextQuestion();
   }, 1000);
 }
 
@@ -10752,14 +10756,14 @@ function cheatDisp(textRaw, answerRaw) {
   var exampleNum = Math.floor(Math.random() * answerExample.length);
   judgeDispProcess('次の問題に行きましょう！', 'cheat');
   incorrectSentences.push({
-    question: questionsArray[count].replace(/\<br\>/, '　'),
+    question: setSentences[count].question,
     yourAnswer: textRaw,
     answerRaw: answerRaw,
     answerExample: answerExample[exampleNum]
   });
   setTimeout(function () {
     isCheated = false;
-    nextQuestion(questionsArray);
+    nextQuestion();
   }, 1000);
 }
 
@@ -10771,10 +10775,10 @@ function judgeDispProcess(text, className) {
   (0, _jquery2.default)('#judge-display').html(text);
 }
 
-function nextQuestion(array) {
+function nextQuestion() {
   count++;
   if (count < finishCount) {
-    (0, _jquery2.default)('#question-display').html(array[count]);
+    (0, _jquery2.default)('#question-display').html(setSentences[count].question);
     (0, _jquery2.default)('#answer-text').val('');
     (0, _jquery2.default)('#answer-text').focus();
     isStarted = true;
@@ -10793,6 +10797,7 @@ function finish() {
   isCheated = true;
   var incorrectCount = incorrectSentences.length;
   if (!isRetried) {
+    storedCorrectAndIncorrect = [finishCount - incorrectCount, incorrectCount];
     isRecorded = true;
   }
   if (incorrectCount === 0) {
@@ -10820,16 +10825,21 @@ function incorrectRetry() {
   (0, _jquery2.default)('#answer-text').focus();
   (0, _jquery2.default)('#judge-zone').addClass('hidden');
   (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
-  questionsArray = [];
-  answersArray = [];
-  incorrectSentences.forEach(function (value) {
-    questionsArray.push(value.question);
-    answersArray.push(value.answerRaw);
+  setSentences = [];
+  var tmpElement = {};
+  incorrectSentences.forEach(function (e) {
+    tmpElement = {
+      grade: storedGradeAndStage[0],
+      stage: storedGradeAndStage[1],
+      question: e.question,
+      answer: e.answerRaw
+    };
+    setSentences.push(tmpElement);
   });
   incorrectSentences = [];
   count = 0;
-  finishCount = questionsArray.length;
-  (0, _jquery2.default)('#question-display').html(questionsArray[count]);
+  finishCount = setSentences.length;
+  (0, _jquery2.default)('#question-display').html(setSentences[count].question);
   isStarted = true;
   isCheated = false;
 }

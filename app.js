@@ -17,7 +17,7 @@ var Incorrect = require('./models/incorrect');
 User.sync().then(() => {
   // Sentence.belongsTo(User, {foreignKey: 'createdBy'});
   Sentence.sync();
-  Record.belongsTo(User, {foreignKey: 'recordedBy'});
+  // Record.belongsTo(User, {foreignKey: 'recordedBy'});
   Record.sync().then(() => {
     Incorrect.belongsTo(Record, {foreignKey: 'recordId'});
     Incorrect.sync();
@@ -59,6 +59,7 @@ var logout = require('./routes/logout');
 var select = require('./routes/select');
 var random = require('./routes/random');
 var sentences = require('./routes/sentences');
+var records = require('./routes/records');
 
 var app = express();
 app.use(helmet());
@@ -85,6 +86,7 @@ app.use('/logout', logout);
 app.use('/select', select);
 app.use('/random', random);
 app.use('/sentences', sentences);
+app.use('/records', records);
 
 app.get('/auth/github',
   passport.authenticate('github', { scope: ['user:email'] }),

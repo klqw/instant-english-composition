@@ -86,18 +86,14 @@ function answerCheck(str) {
 
 function converter(rawArray, convertArray, createdBy) {
   let tmpElement;
-  let element = {}, grade, stage, question, answer;
+  let element = {};
   rawArray.forEach((e) => {
     tmpElement = e.split('|');
-    grade = parseInt(tmpElement[0]);
-    stage = parseInt(tmpElement[1]);
-    question = tmpElement[2];
-    answer = tmpElement[3];
     element = {
-      grade: grade,
-      stage: stage,
-      question: question,
-      answer: answer,
+      grade: parseInt(tmpElement[0]),
+      stage: parseInt(tmpElement[1]),
+      question: tmpElement[2],
+      answer: tmpElement[3],
       createdBy: createdBy
     };
     convertArray.push(element);

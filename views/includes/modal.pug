@@ -30,4 +30,6 @@
     button#done 確認したので戻る
 
 input#sentences(type="hidden" data-sentences=sentences)
-input#course-flag(type="hidden", data-flag=flag)
+if user
+  input#userid(type="hidden" data-userid=user.id)
+input#course(type="hidden", data-course=course)

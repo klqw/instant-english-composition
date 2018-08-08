@@ -4,7 +4,7 @@ const router = express.Router();
 const common = require('./common');
 const Sentence = require('../models/sentence');
 
-const flag = 'select';
+const course = 'select';
 const title = '問題選択コース';
 const tabs = {
   text1: '中学1年レベル',
@@ -19,7 +19,7 @@ router.get('/', (req, res, next) => {
     res.render('select', {
       sentences: sentences,
       user: req.user,
-      flag: flag,
+      course: course,
       title: title,
       tabs: tabs,
       buttons: buttons
