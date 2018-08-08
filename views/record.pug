@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  - var hasRecord = records.length > 0
+  if hasRecord
+    table.table
+      tr
+        th #{user.username} さんの記録一覧
+      each record in records
+        tr
+          td
+            a(href=`/records/${record.recordId}`) [ #{record.courseText} - #{record.stageText} ] [ 記録日時: #{record.recordedAt} ]
+  else
+    p まだ記録はありません
+
+  a(href="/") ホームに戻る

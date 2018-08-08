@@ -1,6 +1,6 @@
 'use strict';
 
-function pushArray(array) {
+function stageTextConverter(array) {
   array.push({ grade: 1, stage: 1, text: 'this / that' });
   array.push({ grade: 1, stage: 2, text: 'these / those' });
   array.push({ grade: 1, stage: 3, text: 'What [is / are] ~ ?' });
@@ -80,14 +80,14 @@ function pushArray(array) {
   array.push({ grade: 3, stage: 20, text: '原型不定詞-使役' });
   array.push({ grade: 3, stage: 21, text: '関係副詞-where' });
   array.push({ grade: 3, stage: 22, text: '関係副詞-when' });
-  array.push({ grade: 96, stage: 99, text: '中学1年の範囲でランダム出題' });
-  array.push({ grade: 97, stage: 99, text: '中学2年の範囲でランダム出題' });
-  array.push({ grade: 98, stage: 99, text: '中学3年の範囲でランダム出題' });
+  array.push({ grade: 96, stage: 96, text: '中学1年の範囲でランダム出題' });
+  array.push({ grade: 97, stage: 97, text: '中学2年の範囲でランダム出題' });
+  array.push({ grade: 98, stage: 98, text: '中学3年の範囲でランダム出題' });
   array.push({ grade: 99, stage: 99, text: 'すべての範囲でランダム出題' });
 }
 
 
 
 module.exports = {
-  pushArray: pushArray
+  stageTextConverter: stageTextConverter
 };

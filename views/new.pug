@@ -2,6 +2,7 @@ extends layout
 
 block content
   input#select-value(type="hidden" data-selects=selects)
+  a(href="/sentences") 問題文一覧ページに戻る
 
   form(method="post", action="/sentences/one")
     div

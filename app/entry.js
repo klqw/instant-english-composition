@@ -347,8 +347,8 @@ function finish() {
   else {
     isRetried = true;
     const correctCount = count - incorrectCount;
-    const correctAvg = Math.floor((correctCount / count) * 100);
-    $('#result-display').html(`${count}問中: 正解: ${correctCount}問 不正解: ${incorrectCount}問<br>正解率は${correctAvg}％でした！`);
+    const correctRate = Math.floor((correctCount / count) * 100);
+    $('#result-display').html(`${count}問中: 正解: ${correctCount}問 不正解: ${incorrectCount}問<br>正解率は${correctRate}％でした！`);
     let storedText = '<h3>間違えた問題一覧</h3>';
     for (let i = 0; i < incorrectSentences.length; i++) {
       storedText += `<p>問題文: ${incorrectSentences[i].question}<br>

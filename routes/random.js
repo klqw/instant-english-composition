@@ -7,7 +7,7 @@ const Sentence = require('../models/sentence');
 const course = 'random';
 const title = 'ランダム出題コース';
 const buttons = [];
-common.pushArray(buttons);
+common.stageTextConverter(buttons);
 
 router.get('/', (req, res, next) => {
   Sentence.findAll().then((sentences) => {

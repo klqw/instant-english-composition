@@ -11,7 +11,7 @@ const grades = {
   text3: '中学3年レベル'
 };
 const selects = [];
-common.pushArray(selects);
+common.stageTextConverter(selects);
 
 router.get('/', authenticationEnsurer, (req, res, next) => {
   const title = '瞬間英作文';
