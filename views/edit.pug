@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  input#select-value(type="hidden" data-selects=selects)
+  input#stored-select(type="hidden" data-grade=sentence.grade data-stage=sentence.stage)
+  a(href="/sentences") 問題文一覧ページに戻る
+
+  form(method="post", action=`/sentences/${sentence.sentenceId}?edit=1`)
+    div
+      h5 学年
+      select#post-grade(name="grade")
+        option(value="1") #{grades.text1}
+        option(value="2") #{grades.text2}
+        option(value="3") #{grades.text3}
+    div
+      h5 ステージ
+      select#post-stage(name="stage")
+    div
+      h5 和文
+      input(type="text" name="question" value=sentence.question)
+    div
+      h5 英文
+      input(type="text" name="answer" value=sentence.answer)
+    div
+      button(type="submit") 以上の内容で問題文を編集する
+  h3 削除ボタンあり
+  form(method="post", action=`/sentences/${sentence.sentenceId}?delete=1`)
+    button(type="submit") この問題文を削除する

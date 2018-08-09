@@ -10664,7 +10664,7 @@ function setRandomCourse(grade) {
 }
 
 function countDown(countDownTime) {
-  if (setSentences.length === 0) {
+  if (setSentences.length < finishCount) {
     (0, _jquery2.default)('#question-display').removeClass('non-started');
     (0, _jquery2.default)('#question-display').html('準備中です。');
     return;
@@ -10977,6 +10977,24 @@ var selects = (0, _jquery2.default)('#select-value').data('selects');
     }
   });
   (0, _jquery2.default)('#post-stage').html(selectHtml);
+});
+
+(0, _jquery2.default)(document).ready(function () {
+  if (document.URL.match(/edit/)) {
+    var grade = (0, _jquery2.default)('#stored-select').data('grade');
+    var stage = (0, _jquery2.default)('#stored-select').data('stage');
+    (0, _jquery2.default)('#post-grade').val(grade);
+    var selectHtml = '';
+    selects.forEach(function (s) {
+      if (grade === s.grade) {
+        selectHtml += '<option value="' + s.stage + '">' + s.text + '</option>';
+      }
+    });
+    (0, _jquery2.default)('#post-stage').html(selectHtml);
+    (0, _jquery2.default)('#post-stage').val(stage);
+  } else {
+    return;
+  }
 });
 
 /***/ })

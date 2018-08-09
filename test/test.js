@@ -58,7 +58,7 @@ describe('/sentences', () => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
       request(app)
         .post('/sentences/one')
-        .send({ grade: 99, stage: 99, question: '投稿テスト', answer: 'PostTest' })
+        .send({ grade: 1, stage: 1, question: '投稿テスト', answer: 'PostTest' })
         .expect('Location', /sentences/)
         .expect(302)
         .end((err, res) => {
@@ -80,7 +80,7 @@ describe('/sentences', () => {
     User.upsert({ userId: 0, username: 'testuser' }).then(() => {
       request(app)
         .post('/sentences/bulk')
-        .send({ bulktext: '99|99|投稿テスト1|PostTest1\r\n99|99|投稿テスト2|PostTest2\r\n99|99|投稿テスト3|PostTest3' })
+        .send({ bulktext: '1|1|投稿テスト1|PostTest1\r\n2|2|投稿テスト2|PostTest2\r\n3|3|投稿テスト3|PostTest3' })
         .expect('Location', /sentences/)
         .expect(302)
         .end((err, res) => {

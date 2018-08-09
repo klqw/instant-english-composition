@@ -202,7 +202,7 @@ function setRandomCourse(grade) {
 }
 
 function countDown(countDownTime) {
-  if (setSentences.length === 0) {
+  if (setSentences.length < finishCount) {
     $('#question-display').removeClass('non-started');
     $('#question-display').html('準備中です。');
     return;
