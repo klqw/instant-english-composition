@@ -10493,7 +10493,6 @@ var count = void 0,
     initialize();
     storedGradeAndStage = setStage(grade, stage);
     (0, _jquery2.default)('#overlay, #modal-contents').fadeIn();
-    console.log(storedGradeAndStage);
   });
 });
 
@@ -10553,7 +10552,7 @@ function locateCenter() {
 (0, _jquery2.default)('#record-button').click(function () {
   if (isRecorded) {
     isRecorded = false;
-    _jquery2.default.post('/records/recording', {
+    _jquery2.default.post('/records', {
       course: course,
       grade: storedGradeAndStage[0],
       stage: storedGradeAndStage[1],
@@ -10562,7 +10561,6 @@ function locateCenter() {
       recordedBy: userId,
       incorrectText: incorrectText
     }, function (data) {
-      console.log(data);
       alert('今回の結果を記録しました。');
     });
   } else {
@@ -10634,7 +10632,6 @@ function setStage(grade, stage) {
         });
       }
     });
-    console.log(setSentences);
   } else {
     shuffle(sentences);
     if (grade === 99) {
@@ -10646,7 +10643,6 @@ function setStage(grade, stage) {
           answer: e.answer
         });
       });
-      console.log(setSentences);
     } else {
       setRandomCourse(grade);
     }
@@ -10665,7 +10661,6 @@ function setRandomCourse(grade) {
       });
     }
   });
-  console.log(setSentences);
 }
 
 function countDown(countDownTime) {
@@ -10681,7 +10676,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     (0, _jquery2.default)('#question-display').removeClass('non-started');
-    (0, _jquery2.default)('#question-display').html(setSentences[count].question);
+    (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
     (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
     isStarted = true;
   }
@@ -10777,7 +10772,7 @@ function judgeDispProcess(text, className) {
 function nextQuestion() {
   count++;
   if (count < finishCount) {
-    (0, _jquery2.default)('#question-display').html(setSentences[count].question);
+    (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
     (0, _jquery2.default)('#answer-text').val('');
     (0, _jquery2.default)('#answer-text').focus();
     isStarted = true;
@@ -10839,7 +10834,7 @@ function incorrectRetry() {
   incorrectSentences = [];
   count = 0;
   finishCount = setSentences.length;
-  (0, _jquery2.default)('#question-display').html(setSentences[count].question);
+  (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
   isStarted = true;
   isCheated = false;
 }

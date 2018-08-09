@@ -7,7 +7,7 @@ const common = require('./common');
 const Record = require('../models/record');
 const Incorrect = require('../models/incorrect');
 
-router.post('/recording', authenticationEnsurer, (req, res, next) => {
+router.post('/', authenticationEnsurer, (req, res, next) => {
   const recordId = uuid.v4();
   const recordedAt = new Date();
   Record.create({
@@ -27,7 +27,7 @@ router.post('/recording', authenticationEnsurer, (req, res, next) => {
     const promise = converter(incorrectTexts, incorrect, recordId);
     Promise.all(promise).then((incorrect) => {
       Incorrect.bulkCreate(incorrect).then(() => {
-        res.json({ status: 'OK', incorrect: incorrect });
+        res.json({ status: 'OK', record: record, incorrect: incorrect });
       });
     });
   });

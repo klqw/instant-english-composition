@@ -4,6 +4,8 @@ const app = require('../app');
 const passportStub = require('passport-stub');
 const User = require('../models/user');
 const Sentence = require('../models/sentence');
+const Record = require('../models/record');
+const Incorrect = require('../models/incorrect');
 
 describe('/login', () => {
   before(() => {
@@ -100,4 +102,43 @@ describe('/sentences', () => {
     });
   });
 
+});
+
+describe('/records', () => {
+  before(() => {
+    passportStub.install(app);
+    passportStub.login({ id: 0, username: 'testuser' });
+  });
+
+  after(() => {
+    passportStub.logout();
+    passportStub.uninstall(app);
+  });
+
+  it('結果を記録できる', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      request(app)
+        .post('/records')
+        .send({ course: 'select', grade: 1, stage: 1, correct: 7, incorrect: 3, recordedBy: 0, incorrectText: '1&&&1&&&あ&&&a&&&A|||1&&&1&&&い&&&i&&&I|||1&&&1&&&う&&&u&&&U|||' })
+        .end((err, res) => {
+          if (err) return done(err);
+          done();
+        });
+    });
+  });
+
+  it('結果を閲覧できる', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      request(app)
+        .get('/records')
+        .expect(/testuser さんの記録一覧/)
+        .expect(/問題選択コース/)
+        .expect(/this\s\/\sthat/)
+        .expect(200)
+        .end((err, res) => {
+          if (err) return done(err);
+          done();
+        });
+    });
+  });
 });

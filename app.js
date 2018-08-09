@@ -14,15 +14,10 @@ var Sentence = require('./models/sentence');
 var Record = require('./models/record');
 var Incorrect = require('./models/incorrect');
 
-User.sync().then(() => {
-  // Sentence.belongsTo(User, {foreignKey: 'createdBy'});
-  Sentence.sync();
-  // Record.belongsTo(User, {foreignKey: 'recordedBy'});
-  Record.sync().then(() => {
-    Incorrect.belongsTo(Record, {foreignKey: 'recordId'});
-    Incorrect.sync();
-  });
-});
+User.sync();
+Sentence.sync();
+Record.sync();
+Incorrect.sync();
 
 var GitHubStrategy = require('passport-github2').Strategy;
 var GITHUB_CLIENT_ID = 'a44da6821666b14fe60e';

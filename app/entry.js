@@ -32,7 +32,6 @@ $('.open').each((i, e) => { // 問題文をセットしてモーダルウィン�
     initialize();
     storedGradeAndStage = setStage(grade, stage);
     $('#overlay, #modal-contents').fadeIn();
-    console.log(storedGradeAndStage);
   });
 });
 
@@ -91,7 +90,7 @@ $('#cheat-button').click(() => {
 $('#record-button').click(() => {
   if (isRecorded) {
     isRecorded = false;
-    $.post('/records/recording', {
+    $.post('/records', {
       course: course,
       grade: storedGradeAndStage[0],
       stage: storedGradeAndStage[1],
@@ -100,7 +99,6 @@ $('#record-button').click(() => {
       recordedBy: userId,
       incorrectText: incorrectText
     }, (data) => {
-      console.log(data);
       alert('今回の結果を記録しました。');
     });
   } else {
@@ -172,7 +170,6 @@ function setStage(grade, stage) {
         });
       }
     });
-    console.log(setSentences);
   } else {
     shuffle(sentences);
     if (grade === 99) {
@@ -184,7 +181,6 @@ function setStage(grade, stage) {
           answer: e.answer
         });
       });
-      console.log(setSentences);
     } else {
       setRandomCourse(grade);
     }
@@ -203,7 +199,6 @@ function setRandomCourse(grade) {
       });
     }
   });
-  console.log(setSentences);
 }
 
 function countDown(countDownTime) {
@@ -219,7 +214,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     $('#question-display').removeClass('non-started');
-    $('#question-display').html(setSentences[count].question);
+    $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
     $('#cheat-zone').removeClass('hidden');
     isStarted = true;
   }
@@ -313,7 +308,7 @@ function judgeDispProcess(text, className) {
 function nextQuestion() {
   count++;
   if (count < finishCount) {
-    $('#question-display').html(setSentences[count].question);
+    $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
     $('#answer-text').val('');
     $('#answer-text').focus();
     isStarted = true;
@@ -379,7 +374,7 @@ function incorrectRetry() {
   incorrectSentences = [];
   count = 0;
   finishCount = setSentences.length;
-  $('#question-display').html(setSentences[count].question);
+  $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
   isStarted = true;
   isCheated = false;
 }
