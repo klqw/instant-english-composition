@@ -2,27 +2,21 @@ extends layout
 
 block content
   p ステージを選択してください。
-  ul.tab
+  ul#tabs
     li.select #{tabs.text1}
     li #{tabs.text2}
     li #{tabs.text3}
   .content-wrap
-    p #{tabs.text1}
     each button in buttons
       if button.grade==1
-        button.btn.open(data-grade=button.grade, data-stage=button.stage) #{button.text}
+        button.open.open-select.button(data-grade=button.grade, data-stage=button.stage) #{button.text}
   .content-wrap.disp-none
-    p #{tabs.text2}
     each button in buttons
       if button.grade==2
-        button.btn.open(data-grade=button.grade, data-stage=button.stage) #{button.text}
+        button.open.open-select.button(data-grade=button.grade, data-stage=button.stage) #{button.text}
   .content-wrap.disp-none
-    p #{tabs.text3}
     each button in buttons
       if button.grade==3
-        button.btn.open(data-grade=button.grade, data-stage=button.stage) #{button.text}
-
-  div
-    a(href="/") ホームに戻る
+        button.open.open-select.button(data-grade=button.grade, data-stage=button.stage) #{button.text}
 
   include includes/modal.pug

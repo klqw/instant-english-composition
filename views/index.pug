@@ -1,18 +1,14 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.jumbotron.my-3
+    h1.display-4 瞬間英作文
+    p.lead ログインしなくてもプレイできますが、ログインすると問題文の閲覧や結果の記録をすることができます。
   div
-    if user
-      a(href="/logout") #{user.username} をログアウト
-    else
-      a(href="/login") ログイン
+    a(href="/select").btn.btn-danger.form-control.my-2 問題選択コース
   div
-    a(href="/select") 問題選択コース
+    a(href="/random").btn.btn-success.form-control.my-2 ランダム出題コース
   div
-    a(href="/random") ランダム出題コース
+    a(href="/sentences").btn.btn-primary.form-control.my-2 問題文一覧
   div
-    a(href="/sentences") 問題文一覧
-  div
-    a(href="/records") 記録一覧
+    a(href="/records").btn.btn-warning.form-control.my-2 記録一覧

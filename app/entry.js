@@ -1,7 +1,9 @@
 'use strict';
 import $ from 'jquery';
+const global = Function('return this;')();
+global.jQuery = $;
+import bootstrap from 'bootstrap';
 
-const judgeDisplay = document.getElementById('judge-display');
 const sentences = $('#sentences').data('sentences');
 const userId = $('#userid').data('userid') || '';
 const course = $('#course').data('course');
@@ -14,13 +16,13 @@ let incorrectText;
 let isClicked, isStarted, isCheated, isRetried, isRecorded;
 let count, finishCount;
 
-$('.tab li').click(function() {  // タブの処理
-  let index = $('.tab li').index(this);
+$('#tabs li').click(function() {  // タブの処理
+  let index = $('#tabs li').index(this);
 
   $('.content-wrap').addClass('disp-none');
   $('.content-wrap').eq(index).removeClass('disp-none');
 
-  $('.tab li').removeClass('select');
+  $('#tabs li').removeClass('select');
   $(this).addClass('select');
 });
 
@@ -38,20 +40,6 @@ $('.open').each((i, e) => { // 問題文をセットしてモーダルウィン�
 $('#close, #stage-select-button').click(() => {
   $('#overlay, #modal-contents').fadeOut();
 });
-
-locateCenter();
-$(window).resize(locateCenter);
-
-function locateCenter() { // モーダルウィンドウを中央配置するための関数
-  let w = $(window).width();
-  let h = $(window).height();
-  let cw = $('#modal-contents').outerWidth();
-  let ch = $('#modal-contents').outerHeight();
-  $('#modal-contents').css({
-    'left': ((w - cw) / 2) + 'px',
-    'top': ((h - ch) / 2) + 'px'
-  });
-}
 
 $('#question-display').click(() => {
   if (isClicked) {
@@ -264,7 +252,9 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   const answerExample = wordChoice(answerRaw);
   const exampleNum = Math.floor(Math.random() * answerExample.length);
-  const incorrectText = `不正解です！<br><span style="color: orange">あなたの解答:</span><br>${textRaw}<br><span style="color: orange">解答例はこちら:</span><br>${answerExample[exampleNum]}`;
+  const incorrectText = '<span style="color: red">不正解です！</span><br>' +
+                        `<span style="color: orange">あなたの解答</span><br>${textRaw}<br>` +
+                        `<span style="color: orange">解答例はこちら</span><br>${answerExample[exampleNum]}`;
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
     grade: setSentences[count].grade,
@@ -298,7 +288,8 @@ function cheatDisp(textRaw, answerRaw) {
 }
 
 function judgeDispProcess(text, className) {
-  judgeDisplay.className = className;
+  $('#judge-display').removeClass('correct incorrect cheat');
+  $('#judge-display').addClass(className);
   $('#cheat-zone').addClass('hidden');
   $('#cheat-display').html('');
   $('#judge-zone').removeClass('hidden');

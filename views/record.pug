@@ -1,18 +1,17 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
   - var hasRecord = records.length > 0
   if hasRecord
+    h3.my-3 #{user.username} さんの記録一覧
     table.table
       tr
-        th #{user.username} さんの記録一覧
+        th 挑戦したステージ
+        th 記録日時
       each record in records
         tr
-          td
-            a(href=`/records/${record.recordId}`) [ #{record.courseText} - #{record.stageText} ] [ 記録日時: #{record.recordedAt} ]
+        td
+          a(href=`/records/${record.recordId}`) #{record.courseText} - #{record.stageText}
+        td #{record.formattedRecordedAt}
   else
     p まだ記録はありません
-
-  a(href="/") ホームに戻る

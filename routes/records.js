@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const uuid = require('node-uuid');
+const moment = require('moment-timezone');
 const common = require('./common');
 const Record = require('../models/record');
 const Incorrect = require('../models/incorrect');
@@ -34,7 +35,6 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
 });
 
 router.get('/', authenticationEnsurer, (req, res, next) => {
-  const title = '瞬間英作文';
   const stageTexts = [];
   common.stageTextConverter(stageTexts);
   if (req.user) {
@@ -50,23 +50,24 @@ router.get('/', authenticationEnsurer, (req, res, next) => {
             if (record.grade === stageText.grade && record.stage === stageText.stage) {
               record.courseText = '問題選択コース';
               record.stageText = stageText.text;
+              record.formattedRecordedAt = moment(record.recordedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
             }
           } else {
             if (record.stage === stageText.stage) {
               record.courseText = 'ランダム出題コース';
               record.stageText = stageText.text;
+              record.formattedRecordedAt = moment(record.recordedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
             }
           }
         });
       });
       res.render('record', {
-        title: title,
         user: req.user,
         records: records
       });
     });
   } else {
-    res.render('record', { title: title, user: req.user });
+    res.render('record', { user: req.user });
   }
 });
 
@@ -90,11 +91,13 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
             if (record.grade === stageText.grade && record.stage === stageText.stage) {
               record.courseText = '問題選択コース';
               record.stageText = stageText.text;
+              record.formattedRecordedAt = moment(record.recordedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
             }
           } else {
             if (record.stage === stageText.stage) {
               record.courseText = 'ランダム出題コース';
               record.stageText = stageText.text;
+              record.formattedRecordedAt = moment(record.recordedAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm');
             }
           }
         });

@@ -2,32 +2,33 @@ extends layout
 
 block content
   input#select-value(type="hidden" data-selects=selects)
-  a(href="/sentences") 問題文一覧ページに戻る
 
-  form(method="post", action="/sentences/one")
-    div
-      h5 学年
-      select#post-grade(name="grade")
+  form(method="post", action="/sentences/one").my-3
+    div.form-group
+      label(for="post-grade") 学年
+      select(name="grade")#post-grade.form-control
         option(value="1" selected="") #{grades.text1}
         option(value="2") #{grades.text2}
         option(value="3") #{grades.text3}
-    div
-      h5 ステージ
-      select#post-stage(name="stage")
+    div.form-group
+      label(for="post-stage") ステージ
+      select(name="stage")#post-stage.form-control
         each select in selects
           if select.grade==1
             option(value=select.stage) #{select.text}
-    div
-      h5 和文
-      input(type="text" name="question")
-    div
-      h5 英文
-      input(type="text" name="answer")
-    button(type="submit") 問題文をつくる
+    div.form-group
+      label(for="post-question") 和文
+      input(type="text" name="question")#post-question.form-control
+    div.form-group
+      label(for="post-answer") 英文
+      input(type="text" name="answer")#post-answer.form-control
+    button(type="submit").btn.btn-info 問題文をつくる
 
   if user.username==='klqw'
     form(method="post", action="/sentences/bulk")
-      div
-        h5 一気に登録
-        textarea(name="bulktext")
-      button(type="submit") 問題文をつくる
+      div.form-group
+        label(for="bulktext") 一気に登録
+        textarea(name="bulktext")#bulktext.form-control
+      button(type="submit").btn.btn-info 問題文をつくる
+
+  a(href="/sentences").form-control.text-info.my-3 問題文一覧ページに戻る

@@ -32,15 +32,15 @@ function stageTextConverter(array) {
   array.push({ grade: 2, stage: 6, text: 'SVOO' });
   array.push({ grade: 2, stage: 7, text: 'will(単純未来)' });
   array.push({ grade: 2, stage: 8, text: 'will(意志未来)' });
-  array.push({ grade: 2, stage: 9, text: 'will(依頼) / shall(申し出・誘い)' });
+  array.push({ grade: 2, stage: 9, text: 'will(依頼) / shall' });
   array.push({ grade: 2, stage: 10, text: 'be going to' });
   array.push({ grade: 2, stage: 11, text: 'must / may' });
   array.push({ grade: 2, stage: 12, text: 'have to' });
   array.push({ grade: 2, stage: 13, text: 'be able to' });
   array.push({ grade: 2, stage: 14, text: '感嘆文' });
   array.push({ grade: 2, stage: 15, text: '不定詞-名詞的用法' });
-  array.push({ grade: 2, stage: 16, text: '不定詞-副詞的用法(目的)' });
-  array.push({ grade: 2, stage: 17, text: '不定詞-副詞的用法(感情の原因)' });
+  array.push({ grade: 2, stage: 16, text: '不定詞-副詞的用法1' });
+  array.push({ grade: 2, stage: 17, text: '不定詞-副詞的用法2' });
   array.push({ grade: 2, stage: 18, text: '不定詞-形容詞的用法' });
   array.push({ grade: 2, stage: 19, text: '動名詞' });
   array.push({ grade: 2, stage: 20, text: '原級比較' });
@@ -50,7 +50,7 @@ function stageTextConverter(array) {
   array.push({ grade: 2, stage: 24, text: '最上級-most' });
   array.push({ grade: 2, stage: 25, text: '比較級-副詞' });
   array.push({ grade: 2, stage: 26, text: '最上級-副詞' });
-  array.push({ grade: 2, stage: 27, text: '比較級、最上級を使った疑問詞の文' });
+  array.push({ grade: 2, stage: 27, text: '比較級、最上級の疑問文' });
   array.push({ grade: 2, stage: 28, text: '現在完了-継続' });
   array.push({ grade: 2, stage: 29, text: '現在完了-完了' });
   array.push({ grade: 2, stage: 30, text: '現在完了-経験' });
@@ -67,12 +67,12 @@ function stageTextConverter(array) {
   array.push({ grade: 3, stage: 7, text: 'SVOC' });
   array.push({ grade: 3, stage: 8, text: '現在分詞修飾' });
   array.push({ grade: 3, stage: 9, text: '過去分詞修飾' });
-  array.push({ grade: 3, stage: 10, text: '関係代名詞-主格(人)' });
-  array.push({ grade: 3, stage: 11, text: '関係代名詞-主格(人以外)' });
-  array.push({ grade: 3, stage: 12, text: '関係代名詞-所有格whoseとof which' });
-  array.push({ grade: 3, stage: 13, text: '関係代名詞-目的格(人)' });
-  array.push({ grade: 3, stage: 14, text: '関係代名詞-目的格(人以外)' });
-  array.push({ grade: 3, stage: 15, text: '先行詞を含む関係代名詞what' });
+  array.push({ grade: 3, stage: 10, text: '関係代名詞-主格1' });
+  array.push({ grade: 3, stage: 11, text: '関係代名詞-主格2' });
+  array.push({ grade: 3, stage: 12, text: '関係代名詞-所有格' });
+  array.push({ grade: 3, stage: 13, text: '関係代名詞-目的格1' });
+  array.push({ grade: 3, stage: 14, text: '関係代名詞-目的格2' });
+  array.push({ grade: 3, stage: 15, text: '関係代名詞-what' });
   array.push({ grade: 3, stage: 16, text: 'too ~ to …' });
   array.push({ grade: 3, stage: 17, text: 'enough ~ to …' });
   array.push({ grade: 3, stage: 18, text: 'so ~ that …' });
@@ -80,13 +80,11 @@ function stageTextConverter(array) {
   array.push({ grade: 3, stage: 20, text: '原型不定詞-使役' });
   array.push({ grade: 3, stage: 21, text: '関係副詞-where' });
   array.push({ grade: 3, stage: 22, text: '関係副詞-when' });
-  array.push({ grade: 96, stage: 96, text: '中学1年の範囲でランダム出題' });
-  array.push({ grade: 97, stage: 97, text: '中学2年の範囲でランダム出題' });
-  array.push({ grade: 98, stage: 98, text: '中学3年の範囲でランダム出題' });
+  array.push({ grade: 96, stage: 96, text: '中学1年レベルでランダム出題' });
+  array.push({ grade: 97, stage: 97, text: '中学2年レベルでランダム出題' });
+  array.push({ grade: 98, stage: 98, text: '中学3年レベルでランダム出題' });
   array.push({ grade: 99, stage: 99, text: 'すべての範囲でランダム出題' });
 }
-
-
 
 module.exports = {
   stageTextConverter: stageTextConverter

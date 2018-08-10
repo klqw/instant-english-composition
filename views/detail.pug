@@ -1,19 +1,26 @@
 extends layout
 
 block content
-  a(href="/records") 記録一覧ページに戻る
-  h4 #{user.username} さんの挑戦した記録詳細
-  p 挑戦したコース: #{record.courseText} - #{record.stageText}
-  p 挑戦した問題数: #{record.count}問
-  p 正解: #{record.correct}問
-  p 不正解: #{record.incorrect}問
-  p 正解率: #{record.correctRate}％
-  p 記録日時: #{record.recordedAt}
+  div.card.my-3
+    div.card-header
+      h4 #{user.username} さんの挑戦した記録詳細
+    div.card-body
+      p 挑戦したコース: #{record.courseText} - #{record.stageText}
+      p 挑戦した問題数: #{record.count}問
+      p 正解: #{record.correct}問
+      p 不正解: #{record.incorrect}問
+      p 正解率: #{record.correctRate}％
+      p 記録日時: #{record.formattedRecordedAt}
 
-  h3 間違えた問題一覧
-  each incorrect in incorrectAll
-    p 出題範囲: #{incorrect.stageText}
-    p 問題: #{incorrect.question}
-    p あなたの解答: #{incorrect.yourAnswer}
-    p 解答例: #{incorrect.correctAnswer}
-    hr
+  div.card.my-3
+    div.card-header
+      h4 間違えた問題一覧
+    div.card-body
+      each incorrect in incorrectAll
+        p 出題ステージ: #{incorrect.stageText}
+        p 問題: #{incorrect.question}
+        p あなたの解答: #{incorrect.yourAnswer}
+        p 解答例: #{incorrect.correctAnswer}
+        hr
+
+  a(href="/records").form-control.text-info.my-3 記録一覧ページに戻る

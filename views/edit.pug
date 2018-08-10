@@ -3,26 +3,29 @@ extends layout
 block content
   input#select-value(type="hidden" data-selects=selects)
   input#stored-select(type="hidden" data-grade=sentence.grade data-stage=sentence.stage)
-  a(href="/sentences") 問題文一覧ページに戻る
 
+
+  h3.my-3 問題文の編集
   form(method="post", action=`/sentences/${sentence.sentenceId}?edit=1`)
-    div
-      h5 学年
-      select#post-grade(name="grade")
+    div.form-group
+      label(for="post-grade") 学年
+      select(name="grade")#post-grade.form-control
         option(value="1") #{grades.text1}
         option(value="2") #{grades.text2}
         option(value="3") #{grades.text3}
+    div.form-group
+      label(for="post-stage") ステージ
+      select(name="stage")#post-stage.form-control
+    div.form-group
+      label(for="post-question") 和文
+      input(type="text" name="question" value=sentence.question)#post-question.form-control
+    div.form-group
+      label(for="post-answer") 英文
+      input(type="text" name="answer" value=sentence.answer)#post-answer.form-control
     div
-      h5 ステージ
-      select#post-stage(name="stage")
-    div
-      h5 和文
-      input(type="text" name="question" value=sentence.question)
-    div
-      h5 英文
-      input(type="text" name="answer" value=sentence.answer)
-    div
-      button(type="submit") 以上の内容で問題文を編集する
-  h3 削除ボタンあり
+      button(type="submit").btn.btn-info 以上の内容で問題文を編集する
+  h3.my-3 この問題文を削除したい場合は、下のボタンを押してください。
   form(method="post", action=`/sentences/${sentence.sentenceId}?delete=1`)
-    button(type="submit") この問題文を削除する
+    button(type="submit").btn.btn-danger この問題文を削除する
+
+  a(href="/sentences").form-control.text-info.my-4 問題文一覧ページに戻る

@@ -1,13 +1,9 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
   div
-    a(href="/") ホームに戻る
-  div
-    a(href="/sentences/new") 新しい問題文を作る
-  h3 問題文一覧
+    a(href="/sentences/new").form-control.text-info.my-3 新しい問題文を作る
+  h3.my-3 問題文一覧
   each sentence in sentences
     - var isAdmin = (user.username === 'klqw')
     - var isMine = (sentence.createdBy === parseInt(user.id))
