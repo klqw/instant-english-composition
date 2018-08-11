@@ -2,34 +2,32 @@
 #overlay
 #modal-contents
   div
-    #{title}
+    label#title-text #{title}
     button#close ×
   #stage-zone
     #question-zone
-      #question-display
+      p#question-display
     input(type="text")#answer-text
-    button#answer-button.button 英作文を入力したら Enterキー または このボタン を押してください
+    p#answer-button.button 英作文を入力したら Enterキー または このボタン を押してください
     #judge-zone
       p#judge-display
     #cheat-zone
-      p
-        button#cheat-button.button カンニングボタン
+      p#cheat-button.button カンニングボタン
       p#cheat-display
   #result-zone
     p#result-display
     if user
-      button#record-button.button.result-btn 結果を記録する
-    button#retry-button.button.result-btn もう一度最初からやる
-    button#incorrect-retry-button.button.result-btn 間違えた問題に再チャレンジ
-    button#incorrect-check-button.button.result-btn 間違えた問題を見る
-    button#stage-select-button.button.result-btn ステージ選択画面に戻る
-    form(method="get" action="/")
-      button(type="submit")#index-button.button.result-btn ホームに戻る
+      p#record-button.button.result-btn 結果を記録する
+    p#retry-button.button.result-btn もう一度最初からやる
+    p#incorrect-retry-button.button.result-btn 間違えた問題に再チャレンジ
+    p#incorrect-check-button.button.result-btn 間違えた問題を見る
+    p#stage-select-button.button.result-btn ステージ選択画面に戻る
+    p#index-button.button.result-btn ホームに戻る
   #incorrect-display-zone
-    #incorrect-display
-    button#done.button.result-btn 確認したので戻る
+    p#incorrect-display
+    p#done.button.result-btn 確認したので戻る
 
 input#sentences(type="hidden" data-sentences=sentences)
 if user
   input#userid(type="hidden" data-userid=user.id)
-input#course(type="hidden", data-course=course)
+input#course(type="hidden", data-course=course, data-title=title)

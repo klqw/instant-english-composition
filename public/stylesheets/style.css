@@ -1,19 +1,27 @@
 body {
-  padding: 50px 30px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  /*font-size: 62.5%;*/
+  /*padding: 50px 30px;*/
+  /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
 }
 
 a {
-  color: #00B7FF;
-}
-
-label {
-  font-size: 1.4em;
+  /*color: #00B7FF;*/
 }
 
 li {
   list-style: none;
+}
+
+p {
+  word-wrap: break-word;
+}
+
+.index-anchor {
+  font-size: 22px;
+}
+
+#select-header {
+  width: 30%;
+  margin: 10px auto;
 }
 
 #tabs {
@@ -25,8 +33,7 @@ li {
   background-color: #55ee88;
   font-size: 20px;
   text-align: center;
-  width: 29%;
-  margin: 0;
+  width: 33%;
   padding: 10px;
   float: left;
   border-radius: 3px;
@@ -47,7 +54,7 @@ li {
   background-color: #338855;
   font-size: 20px;
   text-align: center;
-  width: 35%;
+  width: 60%;
   margin: 0 auto;
   padding: 10px;
   border-radius: 3px;
@@ -55,7 +62,7 @@ li {
 
 .content-wrap {
   background-color: #eeeeee;
-  margin: 0 auto;
+  margin-left: 5%;
 }
 
 .disp-none {
@@ -63,7 +70,7 @@ li {
 }
 
 .random-label {
-  font-size: 1.6em;
+  font-size: 18px;
   text-align: center;
   margin-top: 20px;
 }
@@ -85,12 +92,15 @@ li {
 .open-select {
   width: 22%;
   font-size: 18px;
-  margin: 5px;
+  margin: 0.5%;
   padding: 6px 0;
 }
 
 .open-random {
+  width: 60%;
   font-size: 20px;
+  margin: 15px auto;
+  padding: 8px 0;
 }
 
 #overlay {
@@ -107,7 +117,7 @@ li {
 
 #modal-contents {
   width: 95%;
-  height: 600px;
+  height: 800px;
   border: 2px solid #55dd88;
   background-color: #ffffff;
   display: none;
@@ -132,20 +142,12 @@ li {
   display: none;
 }
 
-#question-zone {
-  height: 125px;
-  margin-top: 50px;
-}
-
 #question-display {
   width: 90%;
-  font-size: 32px;
+  height: 120px;
+  font-size: 24px;
   text-align: center;
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
+  margin: 20px auto;
 }
 
 .non-started {
@@ -156,12 +158,12 @@ li {
 
 #answer-text {
   width: 90%;
-  font-size: 32px;
+  font-size: 24px;
+  margin-top: 20px;
   padding: 10px;
   border: 1px solid #666666;
   border-radius: 3px;
-  position: absolute;
-  top: 30%;
+  position: relative;
   left: 50%;
   transform: translateX(-50%);
   -webkit- transform: translateX(-50%);
@@ -170,141 +172,63 @@ li {
 #answer-button {
   width: 90%;
   font-size: 20px;
+  margin: 10px auto;
   padding: 8px;
-  position: absolute;
-  top: 42%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
 }
 
 #judge-display {
   width: 90%;
   text-align: center;
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
+  margin: 20px auto;
 }
 
 .correct {
-  font-size: 45px;
+  font-size: 30px;
   color: #008800;
 }
 
 .incorrect {
-  font-size: 30px;
+  font-size: 20px;
   color: #000000;
 }
 
 .cheat {
-  font-size: 45px;
+  font-size: 30px;
   color: #000000;
 }
 
 #cheat-button {
-  width: 20%;
+  width: 25%;
   font-size: 20px;
+  margin: 20px auto;
   padding: 8px;
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
 }
 
 #cheat-display {
   font-size: 20px;
-  position: absolute;
-  top: 65%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
+  text-align: center;
+  margin: 10px auto;
 }
 
 #result-display {
   width: 90%;
-  font-size: 32px;
+  font-size: 24px;
   text-align: center;
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#record-button {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#retry-button {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#incorrect-retry-button {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#incorrect-check-button {
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#stage-select-button {
-  position: absolute;
-  top: 70%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#index-button {
-  position: absolute;
-  top: 80%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-}
-
-#incorrect-display {
-  width: 90%;
-  height: 450px;
-  padding: 30px 0 0 50px;
-  text-align: left;
-  position: absolute;
-  top: 5%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
-  overflow: scroll;
+  margin: 30px auto;
 }
 
 .result-btn {
   width: 50%;
   font-size: 24px;
-  padding: 10px;
+  margin: 10px auto;
+  padding: 5px;
 }
 
-#done {
-  position: absolute;
-  top: 85%;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit- transform: translateX(-50%);
+#incorrect-display {
+  width: 90%;
+  height: 400px;
+  margin: 10px auto;
+  padding: 30px 0 0 50px;
+  text-align: left;
+  overflow: scroll;
 }

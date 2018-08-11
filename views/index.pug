@@ -1,14 +1,15 @@
 extends layout
 
 block content
-  div.jumbotron.my-3
+  div.jumbotron.my-1
     h1.display-4 瞬間英作文
-    p.lead ログインしなくてもプレイできますが、ログインすると問題文の閲覧や結果の記録をすることができます。
+    p.lead GitHubアカウントでログインすると、問題文の閲覧やプレイ結果を記録することができます。
+    p (ログインしなくても瞬間英作文を行うことはできます。)
   div
-    a(href="/select").btn.btn-danger.form-control.my-2 問題選択コース
+    a(href="/select").index-anchor.btn.btn-danger.form-control.mb-1 問題選択コース
   div
-    a(href="/random").btn.btn-success.form-control.my-2 ランダム出題コース
+    a(href="/random").index-anchor.btn.btn-success.form-control.mb-1 ランダム出題コース
   div
-    a(href="/sentences").btn.btn-primary.form-control.my-2 問題文一覧
+    a(href="/sentences").index-anchor.btn.btn-primary.form-control.mb-1 問題文一覧
   div
-    a(href="/records").btn.btn-warning.form-control.my-2 記録一覧
+    a(href="/records").index-anchor.btn.btn-warning.form-control.mb-1 記録一覧

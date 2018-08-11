@@ -3,19 +3,21 @@ extends layout
 block content
   .random-course.mb-3 #{title}
   p.random-label 問題数を決めてください。
-  select(name="問題数")#random-num.form-control.w-25.mx-auto
-    option(value="5", selected="") 5問
-    option(value="10") 10問
-    option(value="50") 50問
+  select(name="問題数")#random-num.form-control.w-50.mx-auto
+    option(value="5", selected="") 少なめ - 5問
+    option(value="10") 標準 - 10問
+    option(value="20") やや多め - 20問
+    option(value="50") 多め - 50問
+    option(value="100") かなり多め - 100問
   p.random-label 問題数を決めたら、下のボタンから出題範囲を選択してください。
   each button in buttons
     if button.grade==96
-      button.open.open-random.button.mb-3.form-control(data-grade="1", data-stage=button.stage) #{button.text}
+      p.open.open-random.button(data-grade="1", data-stage=button.stage) #{button.text}
     else if button.grade==97
-      button.open.open-random.button.mb-3.form-control(data-grade="2", data-stage=button.stage) #{button.text}
+      p.open.open-random.button.mb-3(data-grade="2", data-stage=button.stage) #{button.text}
     else if button.grade==98
-      button.open.open-random.button.mb-3.form-control(data-grade="3", data-stage=button.stage) #{button.text}
+      p.open.open-random.button.mb-3(data-grade="3", data-stage=button.stage) #{button.text}
     else if button.grade==99
-      button.open.open-random.button.mb-3.form-control(data-grade=button.grade, data-stage=button.stage) #{button.text}
+      p.open.open-random.button.mb-3(data-grade=button.grade, data-stage=button.stage) #{button.text}
 
   include includes/modal.pug

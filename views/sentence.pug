@@ -2,7 +2,7 @@ extends layout
 
 block content
   div
-    a(href="/sentences/new").form-control.text-info.my-3 新しい問題文を作る
+    a(href="/sentences/new").form-control.text-primary.my-3 新しい問題文を作る
   h3.my-3 問題文一覧
   each sentence in sentences
     - var isAdmin = (user.username === 'klqw')

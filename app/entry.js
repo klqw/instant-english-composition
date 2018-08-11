@@ -31,6 +31,9 @@ $('.open').each((i, e) => { // 問題文をセットしてモーダルウィン�
   button.click(() => {
     const grade = parseInt(button.data('grade'));
     const stage = parseInt(button.data('stage'));
+    const title = $('#course').data('title');
+    const buttonText = button.text();
+    $('#title-text').html(`${title} - ${buttonText}`);
     initialize();
     storedGradeAndStage = setStage(grade, stage);
     $('#overlay, #modal-contents').fadeIn();
@@ -43,6 +46,7 @@ $('#close, #stage-select-button').click(() => {
 
 $('#question-display').click(() => {
   if (isClicked) {
+    $('#close').addClass('hidden');
     $('#answer-text').focus();
     isClicked = false;
     count = 0;
@@ -71,7 +75,7 @@ $('#cheat-button').click(() => {
     const answerExample = wordChoice(setSentences[count].answer);
     const exampleNum = Math.floor(Math.random() * answerExample.length);
     $('#answer-text').focus();
-    $('#cheat-display').html(`解答例はこちら:<br>${answerExample[exampleNum]}`);
+    $('#cheat-display').html(`解答例はこちら<br>${answerExample[exampleNum]}`);
   }
 });
 
@@ -114,12 +118,17 @@ $('#incorrect-check-button').click(() => {
   $('#incorrect-display-zone').removeClass('hidden');
 });
 
+$('#index-button').click(() => {
+  window.location.href = '/';
+});
+
 $('#done').click(() => {
   $('#incorrect-display-zone').addClass('hidden');
   $('#result-zone').removeClass('hidden');
 });
 
 function initialize() {
+  $('#close').removeClass('hidden');
   $('#stage-zone').removeClass('hidden');
   $('#judge-zone').addClass('hidden');
   $('#cheat-zone').addClass('hidden');
@@ -193,6 +202,7 @@ function countDown(countDownTime) {
   if (setSentences.length < finishCount) {
     $('#question-display').removeClass('non-started');
     $('#question-display').html('準備中です。');
+    $('#close').removeClass('hidden');
     return;
   }
   $('#question-display').html(countDownTime--);
@@ -203,6 +213,7 @@ function countDown(countDownTime) {
     clearTimeout(timerId);
     $('#question-display').removeClass('non-started');
     $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+    $('#close').removeClass('hidden');
     $('#cheat-zone').removeClass('hidden');
     isStarted = true;
   }
@@ -381,6 +392,10 @@ function replacer(str) {
   str = str.replace(/Aren\'t/g, 'Are not');
   str = str.replace(/isn\'t/g, 'is not');
   str = str.replace(/Isn\'t/g, 'Is not');
+  str = str.replace(/wasn\'t/g, 'was not');
+  str = str.replace(/Wasn\'t/g, 'Was not');
+  str = str.replace(/weren\'t/g, 'were not');
+  str = str.replace(/Weren\'t/g, 'Were not');
   str = str.replace(/don\'t/g, 'do not');
   str = str.replace(/Don\'t/g, 'Do not');
   str = str.replace(/doesn\'t/g, 'does not');
@@ -391,6 +406,12 @@ function replacer(str) {
   str = str.replace(/Can\'t/g, 'Cannot');
   str = str.replace(/won\'t/g, 'will not');
   str = str.replace(/Won\'t/g, 'Will not');
+  str = str.replace(/mustn\'t/g, 'must not');
+  str = str.replace(/Mustn\'t/g, 'Must not');
+  str = str.replace(/haven\'t/g, 'have not');
+  str = str.replace(/Haven\'t/g, 'Have not');
+  str = str.replace(/hasn\'t/g, 'has not');
+  str = str.replace(/Hasn\'t/g, 'Has not');
   str = str.replace(/I\'m/g, 'I am');
   str = str.replace(/he\'s/g, 'he is');
   str = str.replace(/He\'s/g, 'He is');
@@ -402,9 +423,9 @@ function replacer(str) {
   str = str.replace(/That\'s/g, 'That is');
   str = str.replace(/what\'s/g, 'what is');
   str = str.replace(/What\'s/g, 'What is');
-  str = str.replace(/I\'ll/g, 'I will');
-  str = str.replace(/you\'ll/g, 'you will');
-  str = str.replace(/You\'ll/g, 'You will');
+  str = str.replace(/\'ll/g, ' will');
+  str = str.replace(/\'d/g, ' would');
+  str = str.replace(/\'ve/g, ' have');
   str = str.replace(/let\'s/g, 'let us');
   str = str.replace(/Let\'s/g, 'Let us');
   return str;
