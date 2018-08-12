@@ -4,6 +4,8 @@ const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const common = require('./common');
 const Sentence = require('../models/sentence');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
 const grades = {
   text1: '中学1年レベル',
@@ -26,15 +28,16 @@ router.get('/', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.get('/new', authenticationEnsurer, (req, res, next) => {
+router.get('/new', authenticationEnsurer, csrfProtection, (req, res, next) => {
   res.render('new', {
     user: req.user,
     grades: grades,
-    selects: selects
+    selects: selects,
+    csrfToken: req.csrfToken()
   });
 });
 
-router.get('/:sentenceId/edit', authenticationEnsurer, (req, res, next) => {
+router.get('/:sentenceId/edit', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Sentence.findOne({
     where: {
       sentenceId: req.params.sentenceId
@@ -45,7 +48,8 @@ router.get('/:sentenceId/edit', authenticationEnsurer, (req, res, next) => {
         user: req.user,
         grades: grades,
         selects: selects,
-        sentence: sentence
+        sentence: sentence,
+        csrfToken: req.csrfToken()
       });
     } else {
       const err = new Error('指定された問題文がない、または、問題文を編集する権限がありません。');
@@ -55,7 +59,7 @@ router.get('/:sentenceId/edit', authenticationEnsurer, (req, res, next) => {
   });
 })
 
-router.post('/one', authenticationEnsurer, (req, res, next) => {
+router.post('/one', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const answer = req.body.answer.trim().slice(0, 255);
   const isChecked = answerCheck(answer);
   if (isChecked) {
@@ -75,7 +79,7 @@ router.post('/one', authenticationEnsurer, (req, res, next) => {
   }
 });
 
-router.post('/bulk', authenticationEnsurer, (req, res, next) => {
+router.post('/bulk', authenticationEnsurer, csrfProtection, (req, res, next) => {
   if (req.body.bulktext.indexOf('|') >= 0) {
     const bulkTexts = req.body.bulktext.trim().split('\n').map((s) => s.trim());
     const sentences = [];
@@ -93,7 +97,7 @@ router.post('/bulk', authenticationEnsurer, (req, res, next) => {
   }
 });
 
-router.post('/:sentenceId', authenticationEnsurer, (req, res, next) => {
+router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, next) => {
   Sentence.findOne({
     where: { sentenceId: req.params.sentenceId }
   }).then((sentence) => {

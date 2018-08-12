@@ -4,6 +4,7 @@ block content
   input#select-value(type="hidden" data-selects=selects)
 
   form(method="post", action="/sentences/one").my-3
+    input(type="hidden" name="_csrf" value!=csrfToken)
     div.form-group
       label(for="post-grade") 学年
       select(name="grade")#post-grade.form-control
@@ -26,6 +27,7 @@ block content
 
   if user.username==='klqw'
     form(method="post", action="/sentences/bulk")
+      input(type="hidden" name="_csrf" value!=csrfToken)
       div.form-group
         label(for="bulktext") 一気に登録
         textarea(name="bulktext")#bulktext.form-control

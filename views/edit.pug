@@ -7,6 +7,7 @@ block content
 
   h3.my-3 問題文の編集
   form(method="post", action=`/sentences/${sentence.sentenceId}?edit=1`)
+    input(type="hidden" name="_csrf" value!=csrfToken)
     div.form-group
       label(for="post-grade") 学年
       select(name="grade")#post-grade.form-control
@@ -26,6 +27,7 @@ block content
       button(type="submit").btn.btn-info 以上の内容で問題文を編集する
   h3.my-3 この問題文を削除したい場合は、下のボタンを押してください。
   form(method="post", action=`/sentences/${sentence.sentenceId}?delete=1`)
+    input(type="hidden" name="_csrf" value!=csrfToken)
     button(type="submit").btn.btn-danger この問題文を削除する
 
   a(href="/sentences").form-control.text-info.my-4 問題文一覧ページに戻る
