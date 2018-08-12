@@ -22,9 +22,9 @@ block content
       div.card-body
         each incorrect in incorrectAll
           p 出題ステージ: #{incorrect.stageText}
-          p 問題: #{incorrect.question}
-          p あなたの解答: #{incorrect.yourAnswer}
-          p 解答例: #{incorrect.correctAnswer}
+          p 問題: #{incorrect.formattedQuestion}
+          p あなたの解答: #{incorrect.formattedYourAnswer}
+          p 解答例: #{incorrect.formattedCorrectAnswer}
           hr
 
   a(href="/records").form-control.text-primary.my-3 記録一覧ページに戻る

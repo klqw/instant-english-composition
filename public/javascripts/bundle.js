@@ -10540,8 +10540,9 @@ var count = void 0,
     isCheated = true;
     var answerExample = wordChoice(setSentences[count].answer);
     var exampleNum = Math.floor(Math.random() * answerExample.length);
+    var escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
     (0, _jquery2.default)('#answer-text').focus();
-    (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089<br>' + answerExample[exampleNum]);
+    (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089<br>' + escapedAnswerExample);
   }
 });
 
@@ -10678,7 +10679,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     (0, _jquery2.default)('#question-display').removeClass('non-started');
-    (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+    (0, _jquery2.default)('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
     (0, _jquery2.default)('#close').removeClass('hidden');
     (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
     isStarted = true;
@@ -10729,17 +10730,19 @@ function correctDisp() {
 }
 
 function incorrectDisp(textRaw, answerRaw) {
+  var escapedText = escapeHtml(textRaw);
   var answerExample = wordChoice(answerRaw);
   var exampleNum = Math.floor(Math.random() * answerExample.length);
-  var incorrectText = '不正解です！<br>' + ('<span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54</span><br>' + textRaw + '<br>') + ('<span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089</span><br>' + answerExample[exampleNum]);
+  var escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
+  var incorrectText = '不正解です！<br>' + ('<span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54</span><br>' + escapedText + '<br>') + ('<span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089</span><br>' + escapedAnswerExample);
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
     grade: setSentences[count].grade,
     stage: setSentences[count].stage,
-    question: setSentences[count].question,
-    yourAnswer: textRaw,
+    question: escapeHtml(setSentences[count].question),
+    yourAnswer: escapedText,
     answerRaw: answerRaw,
-    answerExample: answerExample[exampleNum]
+    answerExample: escapedAnswerExample
   });
   setTimeout(function () {
     nextQuestion();
@@ -10753,10 +10756,10 @@ function cheatDisp(textRaw, answerRaw) {
   incorrectSentences.push({
     grade: setSentences[count].grade,
     stage: setSentences[count].stage,
-    question: setSentences[count].question,
-    yourAnswer: textRaw,
+    question: escapeHtml(setSentences[count].question),
+    yourAnswer: escapeHtml(textRaw),
     answerRaw: answerRaw,
-    answerExample: answerExample[exampleNum]
+    answerExample: escapeHtml(answerExample[exampleNum])
   });
   setTimeout(function () {
     isCheated = false;
@@ -10776,7 +10779,7 @@ function judgeDispProcess(text, className) {
 function nextQuestion() {
   count++;
   if (count < finishCount) {
-    (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+    (0, _jquery2.default)('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
     (0, _jquery2.default)('#answer-text').val('');
     (0, _jquery2.default)('#answer-text').focus();
     isStarted = true;
@@ -10797,7 +10800,7 @@ function finish() {
   if (!isRetried) {
     storedCorrectAndIncorrect = [finishCount - incorrectCount, incorrectCount];
     incorrectSentences.forEach(function (e) {
-      incorrectText += e.grade + '&&&' + e.stage + '&&&' + recordReplacer(e.question) + '&&&' + (recordReplacer(e.yourAnswer) + '&&&' + recordReplacer(e.answerExample) + '|||');
+      incorrectText += e.grade + '&&&' + e.stage + '&&&' + e.question + '&&&' + (e.yourAnswer + '&&&' + e.answerExample + '|||');
     });
     isRecorded = true;
   }
@@ -10843,6 +10846,31 @@ function incorrectRetry() {
   (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
   isStarted = true;
   isCheated = false;
+}
+
+function escapeHtml(str) {
+  // XSS対策
+  var escapes = {
+    '&': '&amp;',
+    '|': '&#124;',
+    "'": '&apos;',
+    '`': '&#096;',
+    '"': '&quot;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+  var escapeRegex = '[';
+  for (var _escape in escapes) {
+    if (escapes.hasOwnProperty(_escape)) {
+      escapeRegex += _escape;
+    }
+  }
+  escapeRegex += ']';
+  var regex = new RegExp(escapeRegex, 'g');
+  str = str ? str : ' ';
+  return str.replace(regex, function (match) {
+    return escapes[match];
+  });
 }
 
 function replacer(str) {
@@ -10895,17 +10923,6 @@ function replacer(str) {
   return str;
 }
 
-function recordReplacer(str) {
-  str = str.trim();
-  if (!str) {
-    str = '(tmp)';
-  }
-  str = str.replace(/\&{3,}/g, '(tmp)');
-  str = str.replace(/\|{3,}/g, '(tmp)');
-  str = str.slice(0, 255);
-  return str;
-}
-
 function wordChoice(str) {
   var tmpReplace = str;
   var candidatesWords = [];
@@ -10919,7 +10936,7 @@ function wordChoice(str) {
     if (tmpReplace.indexOf('[') >= 0) {
       frontWord = tmpReplace.slice(tmpReplace.indexOf('[') + 1, tmpReplace.indexOf('/')).trim();
       backWord = tmpReplace.slice(tmpReplace.indexOf('/') + 1, tmpReplace.indexOf(']')).trim();
-      tmpReplace = tmpReplace.replace(/\[((\w(\'|\,|\.|\?|\!)*)+\s+)+\/(\s+(\w(\'|\,|\.|\?|\!)*)*)+\]/, '&&&');
+      tmpReplace = tmpReplace.replace(/\[((\w[\'\,\.\?\!]*)+\s+)+\/(\s+(\w[\'\,\.\?\!]*)*)+\]/, '&&&');
       candidatesWords[matchCount] = [frontWord, backWord];
       matchCount++;
     } else {

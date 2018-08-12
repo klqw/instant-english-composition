@@ -74,8 +74,9 @@ $('#cheat-button').click(() => {
     isCheated = true;
     const answerExample = wordChoice(setSentences[count].answer);
     const exampleNum = Math.floor(Math.random() * answerExample.length);
+    const escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
     $('#answer-text').focus();
-    $('#cheat-display').html(`解答例はこちら<br>${answerExample[exampleNum]}`);
+    $('#cheat-display').html(`解答例はこちら<br>${escapedAnswerExample}`);
   }
 });
 
@@ -212,7 +213,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     $('#question-display').removeClass('non-started');
-    $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+    $('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
     $('#close').removeClass('hidden');
     $('#cheat-zone').removeClass('hidden');
     isStarted = true;
@@ -261,19 +262,21 @@ function correctDisp() {
 }
 
 function incorrectDisp(textRaw, answerRaw) {
+  const escapedText = escapeHtml(textRaw);
   const answerExample = wordChoice(answerRaw);
   const exampleNum = Math.floor(Math.random() * answerExample.length);
+  const escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
   const incorrectText = '不正解です！<br>' +
-                        `<span style="color: orange">あなたの解答</span><br>${textRaw}<br>` +
-                        `<span style="color: orange">解答例はこちら</span><br>${answerExample[exampleNum]}`;
+                        `<span style="color: orange">あなたの解答</span><br>${escapedText}<br>` +
+                        `<span style="color: orange">解答例はこちら</span><br>${escapedAnswerExample}`;
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
     grade: setSentences[count].grade,
     stage: setSentences[count].stage,
-    question: setSentences[count].question,
-    yourAnswer: textRaw,
+    question: escapeHtml(setSentences[count].question),
+    yourAnswer: escapedText,
     answerRaw: answerRaw,
-    answerExample: answerExample[exampleNum]
+    answerExample: escapedAnswerExample
   });
   setTimeout(() => {
     nextQuestion();
@@ -287,10 +290,10 @@ function cheatDisp(textRaw, answerRaw) {
   incorrectSentences.push({
     grade: setSentences[count].grade,
     stage: setSentences[count].stage,
-    question: setSentences[count].question,
-    yourAnswer: textRaw,
+    question: escapeHtml(setSentences[count].question),
+    yourAnswer: escapeHtml(textRaw),
     answerRaw: answerRaw,
-    answerExample: answerExample[exampleNum]
+    answerExample: escapeHtml(answerExample[exampleNum])
   });
   setTimeout(() => {
     isCheated = false;
@@ -310,7 +313,7 @@ function judgeDispProcess(text, className) {
 function nextQuestion() {
   count++;
   if (count < finishCount) {
-    $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+    $('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
     $('#answer-text').val('');
     $('#answer-text').focus();
     isStarted = true;
@@ -331,8 +334,8 @@ function finish() {
   if (!isRetried) {
     storedCorrectAndIncorrect = [finishCount - incorrectCount, incorrectCount];
     incorrectSentences.forEach((e) => {
-      incorrectText += `${e.grade}&&&${e.stage}&&&${recordReplacer(e.question)}&&&` +
-                       `${recordReplacer(e.yourAnswer)}&&&${recordReplacer(e.answerExample)}|||`;
+      incorrectText += `${e.grade}&&&${e.stage}&&&${e.question}&&&` +
+                       `${e.yourAnswer}&&&${e.answerExample}|||`;
     });
     isRecorded = true;
   }
@@ -386,6 +389,30 @@ function incorrectRetry() {
   isCheated = false;
 }
 
+function escapeHtml(str) {  // XSS対策
+  const escapes = {
+    '&': '&amp;',
+    '|': '&#124;',
+    "'": '&apos;',
+    '`': '&#096;',
+    '"': '&quot;',
+    '<': '&lt;',
+    '>': '&gt;'
+  };
+  let escapeRegex = '[';
+  for (let escape in escapes) {
+    if (escapes.hasOwnProperty(escape)) {
+      escapeRegex += escape;
+    }
+  }
+  escapeRegex += ']';
+  const regex = new RegExp(escapeRegex, 'g');
+  str = (str) ? str : ' ';
+  return str.replace(regex, (match) => {
+    return escapes[match];
+  });
+}
+
 function replacer(str) {
   str = str.trim();
   str = str.replace(/\,/g, ', ');
@@ -436,17 +463,6 @@ function replacer(str) {
   return str;
 }
 
-function recordReplacer(str) {
-  str = str.trim();
-  if (!str) {
-    str = '(tmp)';
-  }
-  str = str.replace(/\&{3,}/g, '(tmp)');
-  str = str.replace(/\|{3,}/g, '(tmp)');
-  str = str.slice(0, 255);
-  return str;
-}
-
 function wordChoice(str) {
   let tmpReplace = str;
   let candidatesWords = [];
@@ -458,7 +474,7 @@ function wordChoice(str) {
     if (tmpReplace.indexOf('[') >= 0) {
       frontWord = tmpReplace.slice(tmpReplace.indexOf('[') + 1, tmpReplace.indexOf('/')).trim();
       backWord = tmpReplace.slice(tmpReplace.indexOf('/') + 1, tmpReplace.indexOf(']')).trim();
-      tmpReplace = tmpReplace.replace(/\[((\w(\'|\,|\.|\?|\!)*)+\s+)+\/(\s+(\w(\'|\,|\.|\?|\!)*)*)+\]/, '&&&');
+      tmpReplace = tmpReplace.replace(/\[((\w[\'\,\.\?\!]*)+\s+)+\/(\s+(\w[\'\,\.\?\!]*)*)+\]/, '&&&');
       candidatesWords[matchCount] = [frontWord, backWord];
       matchCount++;
     } else {

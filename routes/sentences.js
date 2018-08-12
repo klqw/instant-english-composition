@@ -60,20 +60,20 @@ router.get('/:sentenceId/edit', authenticationEnsurer, csrfProtection, (req, res
 })
 
 router.post('/one', authenticationEnsurer, csrfProtection, (req, res, next) => {
-  const answer = req.body.answer.trim().slice(0, 255);
+  const answer = req.body.answer;
   const isChecked = answerCheck(answer);
   if (isChecked) {
     Sentence.create({
       grade: req.body.grade,
       stage: req.body.stage,
       question: req.body.question.trim().slice(0, 255),
-      answer: answer,
+      answer: answer.trim().slice(0, 255),
       createdBy: req.user.id
     }).then(() => {
       res.redirect('/sentences');
     });
   } else {
-    const err = new Error('英文の形式に不具合があったため、登録できませんでした。');
+    const err = new Error('投稿された内容に不具合があったため、登録できませんでした。');
     err.status = 400;
     next(err);
   }
@@ -103,7 +103,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
   }).then((sentence) => {
     if (sentence && isMine(req, sentence) || sentence && req.user.username === 'klqw') {
       if (parseInt(req.query.edit) === 1) {
-        const answer = req.body.answer.trim().slice(0, 255);
+        const answer = req.body.answer;
         const isChecked = answerCheck(answer);
         if (isChecked) {
           sentence.update({
@@ -111,12 +111,12 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
             grade: req.body.grade,
             stage: req.body.stage,
             question: req.body.question.trim().slice(0, 255),
-            answer: answer
+            answer: answer.trim().slice(0, 255)
           }).then(() => {
             res.redirect('/sentences');
           });
         } else {
-          const err = new Error('英文の形式に不具合があったため、編集できませんでした。');
+          const err = new Error('投稿された内容に不具合があったため、編集できませんでした。');
           err.status = 400;
           next(err);
         }
@@ -139,11 +139,11 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
 });
 
 function answerCheck(str) {
-  let tmpReplace = str;
   let isChecked = (/^[A-Z]/).test(str);
+  let tmpReplace = str;
 
   if (tmpReplace.indexOf('[') >= 0) {
-    tmpReplace = tmpReplace.replace(/\[((\w(\'|\,|\.|\?|\!)*)+\s+)+\/(\s+(\w(\'|\,|\.|\?|\!)*)*)+\]/g, '&&&');
+    tmpReplace = tmpReplace.replace(/\[((\w[\'\,\.\?\!]*)+\s+)+\/(\s+(\w[\'\,\.\?\!]*)*)+\]/g, '&&&');
   }
   if (tmpReplace.indexOf('[') >= 0) {
     isChecked = false;

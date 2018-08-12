@@ -105,6 +105,9 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
           stageTexts.forEach((stageText) => {
             if (incorrect.grade === stageText.grade && incorrect.stage === stageText.stage) {
               incorrect.stageText = stageText.text;
+              incorrect.formattedQuestion = escapeFormat(incorrect.question);
+              incorrect.formattedYourAnswer = escapeFormat(incorrect.yourAnswer);
+              incorrect.formattedCorrectAnswer = escapeFormat(incorrect.correctAnswer);
             }
           });
         });
@@ -136,6 +139,11 @@ function converter(rawArray, convertArray, recordId) {
     });
   });
   return convertArray;
+}
+
+function escapeFormat(str) {  // エスケープの解除
+  return str.replace(/&amp;/g, '&').replace(/&#124;/g, '|').replace(/&apos;/g, "'").replace(/&#096;/g, '`')
+            .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
 
 module.exports = router;
