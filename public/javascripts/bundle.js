@@ -10731,7 +10731,7 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   var answerExample = wordChoice(answerRaw);
   var exampleNum = Math.floor(Math.random() * answerExample.length);
-  var incorrectText = '<span style="color: red">不正解です！</span><br>' + ('<span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54</span><br>' + textRaw + '<br>') + ('<span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089</span><br>' + answerExample[exampleNum]);
+  var incorrectText = '不正解です！<br>' + ('<span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54</span><br>' + textRaw + '<br>') + ('<span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089</span><br>' + answerExample[exampleNum]);
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
     grade: setSentences[count].grade,
@@ -10803,16 +10803,18 @@ function finish() {
   }
   if (incorrectCount === 0) {
     isRetried = false;
-    (0, _jquery2.default)('#result-display').html('\u5168\u554F\u6B63\u89E3\uFF01<br>' + count + '\u554F\u4E2D: \u6B63\u89E3: ' + count + '\u554F \u4E0D\u6B63\u89E3: 0\u554F<br>\u6B63\u89E3\u7387\u306F100\uFF05\u3067\u3057\u305F\uFF01');
+    var resultText = '<span style="color: red">全問正解！</span><br>' + (count + '\u554F\u4E2D: \u6B63\u89E3: ' + count + '\u554F \u4E0D\u6B63\u89E3: 0\u554F<br>') + '正解率は <span style="color: red">100％</span> でした！';
+    (0, _jquery2.default)('#result-display').html(resultText);
     (0, _jquery2.default)('#incorrect-display').html('あなたは全問正解しました。');
   } else {
     isRetried = true;
     var correctCount = count - incorrectCount;
     var correctRate = Math.floor(correctCount / count * 100);
-    (0, _jquery2.default)('#result-display').html(count + '\u554F\u4E2D: \u6B63\u89E3: ' + correctCount + '\u554F \u4E0D\u6B63\u89E3: ' + incorrectCount + '\u554F<br>\u6B63\u89E3\u7387\u306F' + correctRate + '\uFF05\u3067\u3057\u305F\uFF01');
+    var _resultText = count + '\u554F\u4E2D: \u6B63\u89E3: ' + correctCount + '\u554F \u4E0D\u6B63\u89E3: ' + incorrectCount + '\u554F<br>' + ('\u6B63\u89E3\u7387\u306F <span style="color: blue">' + correctRate + '\uFF05</span> \u3067\u3057\u305F\uFF01');
+    (0, _jquery2.default)('#result-display').html(_resultText);
     var storedText = '<h3>間違えた問題一覧</h3>';
     for (var i = 0; i < incorrectSentences.length; i++) {
-      storedText += '<p>\u554F\u984C\u6587: ' + incorrectSentences[i].question + '<br>\n                  \u3042\u306A\u305F\u306E\u89E3\u7B54: ' + incorrectSentences[i].yourAnswer + '<br>\n                  \u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089: ' + incorrectSentences[i].answerExample + '</p>';
+      storedText += '<p>\u554F\u984C\u6587: ' + incorrectSentences[i].question + '<br>' + ('\u3042\u306A\u305F\u306E\u89E3\u7B54: ' + incorrectSentences[i].yourAnswer + '<br>') + ('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089: ' + incorrectSentences[i].answerExample + '</p>');
     }
     (0, _jquery2.default)('#incorrect-display').html(storedText);
   }

@@ -263,7 +263,7 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   const answerExample = wordChoice(answerRaw);
   const exampleNum = Math.floor(Math.random() * answerExample.length);
-  const incorrectText = '<span style="color: red">不正解です！</span><br>' +
+  const incorrectText = '不正解です！<br>' +
                         `<span style="color: orange">あなたの解答</span><br>${textRaw}<br>` +
                         `<span style="color: orange">解答例はこちら</span><br>${answerExample[exampleNum]}`;
   judgeDispProcess(incorrectText, 'incorrect');
@@ -338,19 +338,24 @@ function finish() {
   }
   if (incorrectCount === 0) {
     isRetried = false;
-    $('#result-display').html(`全問正解！<br>${count}問中: 正解: ${count}問 不正解: 0問<br>正解率は100％でした！`);
+    const resultText = '<span style="color: red">全問正解！</span><br>' +
+                       `${count}問中: 正解: ${count}問 不正解: 0問<br>` +
+                       '正解率は <span style="color: red">100％</span> でした！';
+    $('#result-display').html(resultText);
     $('#incorrect-display').html('あなたは全問正解しました。');
   }
   else {
     isRetried = true;
     const correctCount = count - incorrectCount;
     const correctRate = Math.floor((correctCount / count) * 100);
-    $('#result-display').html(`${count}問中: 正解: ${correctCount}問 不正解: ${incorrectCount}問<br>正解率は${correctRate}％でした！`);
+    const resultText = `${count}問中: 正解: ${correctCount}問 不正解: ${incorrectCount}問<br>` +
+                       `正解率は <span style="color: blue">${correctRate}％</span> でした！`;
+    $('#result-display').html(resultText);
     let storedText = '<h3>間違えた問題一覧</h3>';
     for (let i = 0; i < incorrectSentences.length; i++) {
-      storedText += `<p>問題文: ${incorrectSentences[i].question}<br>
-                  あなたの解答: ${incorrectSentences[i].yourAnswer}<br>
-                  解答例はこちら: ${incorrectSentences[i].answerExample}</p>`
+      storedText += `<p>問題文: ${incorrectSentences[i].question}<br>` +
+                  `あなたの解答: ${incorrectSentences[i].yourAnswer}<br>` +
+                  `解答例はこちら: ${incorrectSentences[i].answerExample}</p>`;
     }
     $('#incorrect-display').html(storedText);
   }

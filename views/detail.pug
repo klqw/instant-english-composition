@@ -9,18 +9,22 @@ block content
       p 挑戦した問題数: #{record.count}問
       p 正解: #{record.correct}問
       p 不正解: #{record.incorrect}問
-      p 正解率: #{record.correctRate}％
+      if record.correctRate == 100
+        p.text-danger 正解率: #{record.correctRate}％
+      else
+        p 正解率: #{record.correctRate}％
       p 記録日時: #{record.formattedRecordedAt}
 
-  div.card.my-3
-    div.card-header
-      h4 間違えた問題一覧
-    div.card-body
-      each incorrect in incorrectAll
-        p 出題ステージ: #{incorrect.stageText}
-        p 問題: #{incorrect.question}
-        p あなたの解答: #{incorrect.yourAnswer}
-        p 解答例: #{incorrect.correctAnswer}
-        hr
+  if incorrectAll.length > 0
+    div.card.my-3
+      div.card-header
+        h4 間違えた問題一覧
+      div.card-body
+        each incorrect in incorrectAll
+          p 出題ステージ: #{incorrect.stageText}
+          p 問題: #{incorrect.question}
+          p あなたの解答: #{incorrect.yourAnswer}
+          p 解答例: #{incorrect.correctAnswer}
+          hr
 
   a(href="/records").form-control.text-primary.my-3 記録一覧ページに戻る

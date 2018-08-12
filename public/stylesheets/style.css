@@ -184,7 +184,7 @@ p {
 
 .correct {
   font-size: 30px;
-  color: #008800;
+  color: #ff0000;
 }
 
 .incorrect {
@@ -194,7 +194,7 @@ p {
 
 .cheat {
   font-size: 30px;
-  color: #000000;
+  color: #0000ff;
 }
 
 #cheat-button {
