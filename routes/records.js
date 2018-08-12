@@ -75,9 +75,15 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
   const stageTexts = [];
   common.stageTextConverter(stageTexts);
   Record.findOne({
+    include: [
+      {
+        model: User,
+        attributes: ['userId', 'username']
+      }],
     where: {
       recordId: req.params.recordId
-    }
+    },
+    order: [['"recordedAt"', 'DESC']]
   }).then((record) => {
     if (record) {
       Incorrect.findAll({
@@ -114,11 +120,42 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
         res.render('detail', {
           user: req.user,
           record: record,
-          incorrectAll: incorrectAll
+          incorrectAll: incorrectAll,
+          users: [req.user]
         });
       });
     } else {
       const err = new Error('指定された記録は見つかりませんでした。');
+      err.status = 404;
+      next(err);
+    }
+  });
+});
+
+router.post('/:recordId', authenticationEnsurer, (req, res, next) => {
+  Record.findOne({
+    where: {
+      recordId: req.params.recordId
+    }
+  }).then((record) => {
+    if (record && isMine(req, record)) {
+      if (parseInt(req.query.delete) === 1) {
+        const recordId = record.recordId;
+        Incorrect.findAll({
+          where: { recordId: recordId }
+        }).then((incorrectAll) => {
+          incorrectAll.forEach((i) => { i.destroy(); });
+          Record.findById(recordId).then((r) => { r.destroy(); });
+        }).then(() => {
+          res.redirect('/records');
+        });
+      } else {
+        const err = new Error('不正なリクエストです');
+        err.status = 400;
+        next(err);
+      }
+    } else {
+      const err = new Error('指定された記録がない、または、削除する権限がありません');
       err.status = 404;
       next(err);
     }
@@ -144,6 +181,10 @@ function converter(rawArray, convertArray, recordId) {
 function escapeFormat(str) {  // エスケープの解除
   return str.replace(/&amp;/g, '&').replace(/&#124;/g, '|').replace(/&apos;/g, "'").replace(/&#096;/g, '`')
             .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+}
+
+function isMine(req, record) {
+  return record && parseInt(record.recordedBy) === parseInt(req.user.id);
 }
 
 module.exports = router;

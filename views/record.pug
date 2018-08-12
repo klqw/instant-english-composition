@@ -8,10 +8,14 @@ block content
       tr
         th 挑戦したステージ
         th 記録日時
+        th 記録の削除
       each record in records
         tr
         td
           a(href=`/records/${record.recordId}`) #{record.courseText} - #{record.stageText}
         td #{record.formattedRecordedAt}
+        td
+          form(method="post", action=`/records/${record.recordId}?delete=1`)
+            button(type="submit").btn.btn-danger.btn-sm この記録を削除する
   else
     p まだ記録はありません
