@@ -1,0 +1,7 @@
+{
+  "name": "instant-english-composition",
+  "description": "瞬間英作文",
+  "logo": "",
+  "keywords": ["node"],
+  "image": "heroku/nodejs"
+}
