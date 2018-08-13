@@ -62,13 +62,11 @@ router.get('/:sentenceId/edit', authenticationEnsurer, csrfProtection, (req, res
 });
 
 router.get('/search', authenticationEnsurer, (req, res, next) => {
-  if (req.query.grade && req.query.stage) {
-    const grade = parseInt(req.query.grade);
-    const stage = parseInt(req.query.stage);
+  if (!(isNaN(parseInt(req.query.grade))) && !(isNaN(parseInt(req.query.stage)))) {
     Sentence.findAll({
       where: {
-        grade: grade,
-        stage: stage
+        grade: parseInt(req.query.grade),
+        stage: parseInt(req.query.stage)
       }
     }).then((sentences) => {
       res.render('sentence', {
@@ -78,7 +76,7 @@ router.get('/search', authenticationEnsurer, (req, res, next) => {
         sentences: sentences
       });
     });
-  } else if (req.query.user) {
+  } else if (!(isNaN(parseInt(req.query.user)))) {
     Sentence.findAll({
       where: {
         createdBy: parseInt(req.query.user)

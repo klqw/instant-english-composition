@@ -7,33 +7,47 @@ block content
 
   div
     a(href="/sentences/new").form-control.text-primary.my-3 新しい問題文を作る
-  form(method="get", action="/sentences/search")
-    select(name="grade")#post-grade.w-25.mx-2.p-1
-      option(value="1" selected="") #{grades.text1}
-      option(value="2") #{grades.text2}
-      option(value="3") #{grades.text3}
-    select(name="stage")#post-stage.w-25.mx-2.p-1
-      each select in selects
-        if select.grade==1
-          option(value=select.stage) #{select.text}
-    button(type="submit") 絞り込み検索
-  form(method="get", action="/sentences/search")
-    input(type="hidden" name="user" value=user.id)
-    button(type="submit").m-2 #{user.username} さんの作った問題文を検索
+  div.card.p-3
+    form(method="get", action="/sentences/search")
+      label.ml-2.pl-2 学年
+      select(name="grade")#post-grade.mx-2.p-1
+        option(value="1" selected="") #{grades.text1}
+        option(value="2") #{grades.text2}
+        option(value="3") #{grades.text3}
+      label.ml-2.pl-2 ステージ
+      select(name="stage")#post-stage.w-25.mx-2.p-1
+        each select in selects
+          if select.grade==1
+            option(value=select.stage) #{select.text}
+      label.mx-2.px-2 で
+      button(type="submit").px-2.py-1 絞り込み検索
+    form(method="get", action="/sentences/search")
+      input(type="hidden" name="user" value=user.id)
+      label.border.border-light.m-2.px-2.py-1 #{user.username} さんが作成した問題文で
+      button(type="submit").px-2.py-1 絞り込み検索
 
   if (sentences.length > 0)
+    - var isAdmin = (user.username === 'klqw')
     h3.my-3 問題文一覧
     each sentence in sentences
-      - var isAdmin = (user.username === 'klqw')
       - var isMine = (sentence.createdBy === parseInt(user.id))
-      if (isMine || isAdmin)
-        p 問題#{sentence.sentenceId}: #{sentence.question}
-        p 解答#{sentence.sentenceId}: #{sentence.answer}
-        a.edit-link(href=`/sentences/${sentence.sentenceId}/edit` data-grade=sentence.grade data-stage=sentence.stage) この問題文を編集する
-        hr
-      else
-        p 問題#{sentence.sentenceId}: #{sentence.question}
-        p 解答#{sentence.sentenceId}: #{sentence.answer}
-        hr
+      table
+        tr
+          td No.#{sentence.sentenceId}
+          td
+        tr
+          td 問題　　
+          td #{sentence.question}
+        tr
+          td 解答　　
+          td #{sentence.answer}
+        tr
+          td
+          if (isMine || isAdmin)
+            td
+              a.edit-link(href=`/sentences/${sentence.sentenceId}/edit` data-grade=sentence.grade data-stage=sentence.stage) この問題文を編集する
+          else
+            td
+      hr
   else
     p.my-3 まだ問題文はありません。
