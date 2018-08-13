@@ -10623,7 +10623,6 @@ function initialize() {
 function setStage(grade, stage) {
   var gradeAndStage = [grade, stage];
   if (course === 'select') {
-    // shuffle(sentencesArray);
     sentences.forEach(function (e) {
       if (grade === e.grade && stage === e.stage) {
         setSentences.push({
@@ -10635,7 +10634,6 @@ function setStage(grade, stage) {
       }
     });
   } else {
-    shuffle(sentences);
     if (grade === 99) {
       sentences.forEach(function (e) {
         setSentences.push({
@@ -10649,6 +10647,7 @@ function setStage(grade, stage) {
       setRandomCourse(grade);
     }
   }
+  shuffle(setSentences);
   return gradeAndStage;
 }
 
@@ -10687,6 +10686,9 @@ function countDown(countDownTime) {
 }
 
 function shuffle(array) {
+  if (array.length <= 1) {
+    return;
+  }
   for (var i = array.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
     var tmp = array[i];
@@ -10757,7 +10759,7 @@ function cheatDisp(textRaw, answerRaw) {
     grade: setSentences[count].grade,
     stage: setSentences[count].stage,
     question: escapeHtml(setSentences[count].question),
-    yourAnswer: escapeHtml(textRaw),
+    yourAnswer: escapeHtml(textRaw) + ' (カンニング)',
     answerRaw: answerRaw,
     answerExample: escapeHtml(answerExample[exampleNum])
   });

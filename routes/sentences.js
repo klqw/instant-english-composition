@@ -73,7 +73,7 @@ router.post('/one', authenticationEnsurer, csrfProtection, (req, res, next) => {
       res.redirect('/sentences');
     });
   } else {
-    const err = new Error('投稿された内容に不具合があったため、登録できませんでした。');
+    const err = new Error('英文の形式に不具合があったため、登録できませんでした。');
     err.status = 400;
     next(err);
   }
@@ -116,7 +116,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
             res.redirect('/sentences');
           });
         } else {
-          const err = new Error('投稿された内容に不具合があったため、編集できませんでした。');
+          const err = new Error('英文の形式に不具合があったため、編集できませんでした。');
           err.status = 400;
           next(err);
         }

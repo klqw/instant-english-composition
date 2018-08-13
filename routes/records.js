@@ -5,6 +5,7 @@ const authenticationEnsurer = require('./authentication-ensurer');
 const uuid = require('node-uuid');
 const moment = require('moment-timezone');
 const common = require('./common');
+const User = require('../models/user');
 const Record = require('../models/record');
 const Incorrect = require('../models/incorrect');
 
@@ -82,8 +83,7 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
       }],
     where: {
       recordId: req.params.recordId
-    },
-    order: [['"recordedAt"', 'DESC']]
+    }
   }).then((record) => {
     if (record) {
       Incorrect.findAll({
@@ -120,8 +120,7 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
         res.render('detail', {
           user: req.user,
           record: record,
-          incorrectAll: incorrectAll,
-          users: [req.user]
+          incorrectAll: incorrectAll
         });
       });
     } else {
