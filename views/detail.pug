@@ -5,15 +5,29 @@ block content
     div.card-header
       h4 #{record.user.username} さんの挑戦した記録詳細
     div.card-body
-      p 挑戦したコース: #{record.courseText} - #{record.stageText}
-      p 挑戦した問題数: #{record.count}問
-      p 正解: #{record.correct}問
-      p 不正解: #{record.incorrect}問
-      if record.correctRate == 100
-        p.text-danger 正解率: #{record.correctRate}％
-      else
-        p 正解率: #{record.correctRate}％
-      p 記録日時: #{record.formattedRecordedAt}
+      table
+        tr
+          td.bold 挑戦したコース　
+          td #{record.courseText} - #{record.stageText}
+        tr
+          td.bold 挑戦した問題数　
+          td #{record.count}問
+        tr
+          td.bold 正解
+          td #{record.correct}問
+        tr
+          td.bold 不正解
+          td #{record.incorrect}問
+        tr
+          if record.correctRate == 100
+            td.bold 正解率
+            td.text-danger #{record.correctRate}％
+          else
+            td.bold 正解率
+            td #{record.correctRate}％
+        tr
+          td.bold 記録日時
+          td #{record.formattedRecordedAt}
 
   if incorrectAll.length > 0
     div.card.my-3
@@ -21,10 +35,19 @@ block content
         h4 間違えた問題一覧
       div.card-body
         each incorrect in incorrectAll
-          p 出題ステージ: #{incorrect.stageText}
-          p 問題: #{incorrect.formattedQuestion}
-          p あなたの解答: #{incorrect.formattedYourAnswer}
-          p 解答例: #{incorrect.formattedCorrectAnswer}
+          table
+            tr
+              td.bold 出題ステージ　
+              td #{incorrect.stageText}
+            tr
+              td.bold 問題
+              td #{incorrect.formattedQuestion}
+            tr
+              td.bold あなたの解答　
+              td #{incorrect.formattedYourAnswer}
+            tr
+              td.bold 解答例
+              td #{incorrect.formattedCorrectAnswer}
           hr
 
   a(href="/records").form-control.text-primary.my-3 記録一覧ページに戻る

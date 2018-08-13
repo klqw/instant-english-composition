@@ -358,11 +358,14 @@ function finish() {
     const resultText = `${count}問中: 正解: ${correctCount}問 不正解: ${incorrectCount}問<br>` +
                        `正解率は <span style="color: blue">${correctRate}％</span> でした！`;
     $('#result-display').html(resultText);
-    let storedText = '<h3>間違えた問題一覧</h3>';
+    let storedText = '<h3>間違えた問題一覧</h3><hr>';
     for (let i = 0; i < incorrectSentences.length; i++) {
-      storedText += `<p>問題文: ${incorrectSentences[i].question}<br>` +
-                  `あなたの解答: ${incorrectSentences[i].yourAnswer}<br>` +
-                  `解答例はこちら: ${incorrectSentences[i].answerExample}</p>`;
+      storedText += '<table><tr><td><span style="color: orange">問題文</span></td>' +
+                  `<td>${incorrectSentences[i].question}</td></tr>` +
+                  '<tr><td><span style="color: orange">あなたの解答　</span></td>' +
+                  `<td>${incorrectSentences[i].yourAnswer}</td></tr>` +
+                  '<tr><td><span style="color: orange">解答例</span></td>' +
+                  `<td>${incorrectSentences[i].answerExample}</td></tr></table><hr>`;
     }
     $('#incorrect-display').html(storedText);
   }

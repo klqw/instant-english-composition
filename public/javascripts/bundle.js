@@ -10819,9 +10819,9 @@ function finish() {
     var correctRate = Math.floor(correctCount / count * 100);
     var _resultText = count + '\u554F\u4E2D: \u6B63\u89E3: ' + correctCount + '\u554F \u4E0D\u6B63\u89E3: ' + incorrectCount + '\u554F<br>' + ('\u6B63\u89E3\u7387\u306F <span style="color: blue">' + correctRate + '\uFF05</span> \u3067\u3057\u305F\uFF01');
     (0, _jquery2.default)('#result-display').html(_resultText);
-    var storedText = '<h3>間違えた問題一覧</h3>';
+    var storedText = '<h3>間違えた問題一覧</h3><hr>';
     for (var i = 0; i < incorrectSentences.length; i++) {
-      storedText += '<p>\u554F\u984C\u6587: ' + incorrectSentences[i].question + '<br>' + ('\u3042\u306A\u305F\u306E\u89E3\u7B54: ' + incorrectSentences[i].yourAnswer + '<br>') + ('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089: ' + incorrectSentences[i].answerExample + '</p>');
+      storedText += '<table><tr><td><span style="color: orange">問題文</span></td>' + ('<td>' + incorrectSentences[i].question + '</td></tr>') + '<tr><td><span style="color: orange">あなたの解答　</span></td>' + ('<td>' + incorrectSentences[i].yourAnswer + '</td></tr>') + '<tr><td><span style="color: orange">解答例</span></td>' + ('<td>' + incorrectSentences[i].answerExample + '</td></tr></table><hr>');
     }
     (0, _jquery2.default)('#incorrect-display').html(storedText);
   }
