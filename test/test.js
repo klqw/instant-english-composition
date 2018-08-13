@@ -69,6 +69,12 @@ describe('/sentences', () => {
             .expect(/PostTest/)
             .expect(200)
             .end((err, res) => {
+              // テストで作成したデータを削除
+              Sentence.findAll({
+                where: { createdBy: 0 }
+              }).then((sentences) => {
+                sentences.forEach((s) => { s.destroy(); });
+              });
               if (err) return done(err);
               done();
             });
@@ -95,9 +101,29 @@ describe('/sentences', () => {
             .expect(/PostTest3/)
             .expect(200)
             .end((err, res) => {
+              // テストで作成したデータを削除
+              Sentence.findAll({
+                where: { createdBy: 0 }
+              }).then((sentences) => {
+                sentences.forEach((s) => { s.destroy(); });
+              });
               if (err) return done(err);
               done();
             });
+        });
+    });
+  });
+
+  it('英文の形式ミスでエラーページを表示する(単数登録)', (done) => {
+    User.upsert({ userId: 0, username: 'testuser' }).then(() => {
+      request(app)
+        .post('/sentences/one')
+        .send({ grade: 1, stage: 1, question: '投稿テスト', answer: 'postTest' })
+        .expect(/英文の形式に不具合があったため、登録できませんでした。/)
+        .expect(400)
+        .end((err, res) => {
+          if (err) return done(err);
+          done();
         });
     });
   });

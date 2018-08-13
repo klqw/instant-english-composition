@@ -8,7 +8,7 @@ block content
       tr
         th 挑戦したステージ
         th 記録日時
-        th  
+        th
       each record in records
         tr
         td
@@ -16,6 +16,7 @@ block content
         td #{record.formattedRecordedAt}
         td
           form(method="post", action=`/records/${record.recordId}?delete=1`)
+            input(type="hidden" name="_csrf" value!=csrfToken)
             button(type="submit").btn.btn-danger.btn-sm この記録を削除する
   else
     p まだ記録はありません

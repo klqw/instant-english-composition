@@ -8,6 +8,8 @@ const common = require('./common');
 const User = require('../models/user');
 const Record = require('../models/record');
 const Incorrect = require('../models/incorrect');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
 router.post('/', authenticationEnsurer, (req, res, next) => {
   const recordId = uuid.v4();
@@ -35,7 +37,37 @@ router.post('/', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.get('/', authenticationEnsurer, (req, res, next) => {
+router.post('/:recordId', authenticationEnsurer, csrfProtection, (req, res, next) => {
+  Record.findOne({
+    where: {
+      recordId: req.params.recordId
+    }
+  }).then((record) => {
+    if (record && isMine(req, record)) {
+      if (parseInt(req.query.delete) === 1) {
+        const recordId = record.recordId;
+        Incorrect.findAll({
+          where: { recordId: recordId }
+        }).then((incorrectAll) => {
+          incorrectAll.forEach((i) => { i.destroy(); });
+          Record.findById(recordId).then((r) => { r.destroy(); });
+        }).then(() => {
+          res.redirect('/records');
+        });
+      } else {
+        const err = new Error('不正なリクエストです');
+        err.status = 400;
+        next(err);
+      }
+    } else {
+      const err = new Error('指定された記録がない、または、削除する権限がありません');
+      err.status = 404;
+      next(err);
+    }
+  });
+});
+
+router.get('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const stageTexts = [];
   common.stageTextConverter(stageTexts);
   if (req.user) {
@@ -64,7 +96,8 @@ router.get('/', authenticationEnsurer, (req, res, next) => {
       });
       res.render('record', {
         user: req.user,
-        records: records
+        records: records,
+        csrfToken: req.csrfToken()
       });
     });
   } else {
@@ -131,36 +164,6 @@ router.get('/:recordId', authenticationEnsurer, (req, res, next) => {
   });
 });
 
-router.post('/:recordId', authenticationEnsurer, (req, res, next) => {
-  Record.findOne({
-    where: {
-      recordId: req.params.recordId
-    }
-  }).then((record) => {
-    if (record && isMine(req, record)) {
-      if (parseInt(req.query.delete) === 1) {
-        const recordId = record.recordId;
-        Incorrect.findAll({
-          where: { recordId: recordId }
-        }).then((incorrectAll) => {
-          incorrectAll.forEach((i) => { i.destroy(); });
-          Record.findById(recordId).then((r) => { r.destroy(); });
-        }).then(() => {
-          res.redirect('/records');
-        });
-      } else {
-        const err = new Error('不正なリクエストです');
-        err.status = 400;
-        next(err);
-      }
-    } else {
-      const err = new Error('指定された記録がない、または、削除する権限がありません');
-      err.status = 404;
-      next(err);
-    }
-  });
-});
-
 function converter(rawArray, convertArray, recordId) {
   let tmpElement;
   rawArray.forEach((e) => {
@@ -177,13 +180,13 @@ function converter(rawArray, convertArray, recordId) {
   return convertArray;
 }
 
+function isMine(req, record) {
+  return record && parseInt(record.recordedBy) === parseInt(req.user.id);
+}
+
 function escapeFormat(str) {  // エスケープの解除
   return str.replace(/&amp;/g, '&').replace(/&#124;/g, '|').replace(/&apos;/g, "'").replace(/&#096;/g, '`')
             .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-}
-
-function isMine(req, record) {
-  return record && parseInt(record.recordedBy) === parseInt(req.user.id);
 }
 
 module.exports = router;
