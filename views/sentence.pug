@@ -1,18 +1,39 @@
 extends layout
 
 block content
+  input#select-value(type="hidden" data-selects=selects)
+  if (sentences.length > 0)
+    input#stored-select(type="hidden" data-grade=sentences[0].grade data-stage=sentences[0].stage)
+
   div
     a(href="/sentences/new").form-control.text-primary.my-3 新しい問題文を作る
-  h3.my-3 問題文一覧
-  each sentence in sentences
-    - var isAdmin = (user.username === 'klqw')
-    - var isMine = (sentence.createdBy === parseInt(user.id))
-    if (isMine || isAdmin)
-      p 問題#{sentence.sentenceId}: #{sentence.question}
-      p 解答#{sentence.sentenceId}: #{sentence.answer}
-      a.edit-link(href=`/sentences/${sentence.sentenceId}/edit` data-grade=sentence.grade data-stage=sentence.stage) この問題文を編集する
-      hr
-    else
-      p 問題#{sentence.sentenceId}: #{sentence.question}
-      p 解答#{sentence.sentenceId}: #{sentence.answer}
-      hr
+  form(method="get", action="/sentences/search")
+    select(name="grade")#post-grade.w-25.mx-2.p-1
+      option(value="1" selected="") #{grades.text1}
+      option(value="2") #{grades.text2}
+      option(value="3") #{grades.text3}
+    select(name="stage")#post-stage.w-25.mx-2.p-1
+      each select in selects
+        if select.grade==1
+          option(value=select.stage) #{select.text}
+    button(type="submit") 絞り込み検索
+  form(method="get", action="/sentences/search")
+    input(type="hidden" name="user" value=user.id)
+    button(type="submit").m-2 #{user.username} さんの作った問題文を検索
+
+  if (sentences.length > 0)
+    h3.my-3 問題文一覧
+    each sentence in sentences
+      - var isAdmin = (user.username === 'klqw')
+      - var isMine = (sentence.createdBy === parseInt(user.id))
+      if (isMine || isAdmin)
+        p 問題#{sentence.sentenceId}: #{sentence.question}
+        p 解答#{sentence.sentenceId}: #{sentence.answer}
+        a.edit-link(href=`/sentences/${sentence.sentenceId}/edit` data-grade=sentence.grade data-stage=sentence.stage) この問題文を編集する
+        hr
+      else
+        p 問題#{sentence.sentenceId}: #{sentence.question}
+        p 解答#{sentence.sentenceId}: #{sentence.answer}
+        hr
+  else
+    p.my-3 まだ問題文はありません。

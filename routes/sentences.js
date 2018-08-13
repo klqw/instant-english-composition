@@ -23,7 +23,9 @@ router.get('/', authenticationEnsurer, (req, res, next) => {
     res.render('sentence', {
       title: title,
       sentences: sentences,
-      user: req.user
+      user: req.user,
+      grades: grades,
+      selects: selects
     });
   });
 });
@@ -57,7 +59,44 @@ router.get('/:sentenceId/edit', authenticationEnsurer, csrfProtection, (req, res
       next(err);
     }
   });
-})
+});
+
+router.get('/search', authenticationEnsurer, (req, res, next) => {
+  if (req.query.grade && req.query.stage) {
+    const grade = parseInt(req.query.grade);
+    const stage = parseInt(req.query.stage);
+    Sentence.findAll({
+      where: {
+        grade: grade,
+        stage: stage
+      }
+    }).then((sentences) => {
+      res.render('sentence', {
+        user: req.user,
+        grades: grades,
+        selects: selects,
+        sentences: sentences
+      });
+    });
+  } else if (req.query.user) {
+    Sentence.findAll({
+      where: {
+        createdBy: parseInt(req.query.user)
+      }
+    }).then((sentences) => {
+      res.render('sentence', {
+        user: req.user,
+        grades: grades,
+        selects: selects,
+        sentences: sentences
+      });
+    });
+  } else {
+    const err = new Error('不正なリクエストです。');
+    err.status = 400;
+    next(err);
+  }
+});
 
 router.post('/one', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const answer = req.body.answer;

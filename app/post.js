@@ -15,9 +15,9 @@ $('#post-grade').change(() => {
 });
 
 $(document).ready(() => {
-  if (document.URL.match(/edit/)) {
-    const grade = $('#stored-select').data('grade');
-    const stage = $('#stored-select').data('stage');
+  if (document.URL.match(/edit/) || document.URL.match(/search\?grade/)) {
+    const grade = $('#stored-select').data('grade') || 1;
+    const stage = $('#stored-select').data('stage') || 1;
     $('#post-grade').val(grade);
     let selectHtml = '';
     selects.forEach((s) => {

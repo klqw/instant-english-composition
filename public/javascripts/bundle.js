@@ -17464,9 +17464,9 @@ var selects = (0, _jquery2.default)('#select-value').data('selects');
 });
 
 (0, _jquery2.default)(document).ready(function () {
-  if (document.URL.match(/edit/)) {
-    var grade = (0, _jquery2.default)('#stored-select').data('grade');
-    var stage = (0, _jquery2.default)('#stored-select').data('stage');
+  if (document.URL.match(/edit/) || document.URL.match(/search\?grade/)) {
+    var grade = (0, _jquery2.default)('#stored-select').data('grade') || 1;
+    var stage = (0, _jquery2.default)('#stored-select').data('stage') || 1;
     (0, _jquery2.default)('#post-grade').val(grade);
     var selectHtml = '';
     selects.forEach(function (s) {
