@@ -10549,6 +10549,7 @@ var count = void 0,
 (0, _jquery2.default)('#record-button').click(function () {
   if (isRecorded) {
     isRecorded = false;
+    var _csrf = (0, _jquery2.default)('#csrf').val();
     _jquery2.default.post('/records', {
       course: course,
       grade: storedGradeAndStage[0],
@@ -10556,7 +10557,8 @@ var count = void 0,
       correct: storedCorrectAndIncorrect[0],
       incorrect: storedCorrectAndIncorrect[1],
       recordedBy: userId,
-      incorrectText: incorrectText
+      incorrectText: incorrectText,
+      _csrf: _csrf
     }, function (data) {
       alert('今回の結果を記録しました。');
     });

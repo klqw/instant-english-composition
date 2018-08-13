@@ -3,6 +3,8 @@ const express = require('express');
 const router = express.Router();
 const common = require('./common');
 const Sentence = require('../models/sentence');
+const csrf = require('csurf');
+const csrfProtection = csrf({ cookie: true });
 
 const course = 'select';
 const title = '問題選択コース';
@@ -14,7 +16,7 @@ const tabs = {
 const buttons = [];
 common.stageTextConverter(buttons);
 
-router.get('/', (req, res, next) => {
+router.get('/', csrfProtection, (req, res, next) => {
   Sentence.findAll().then((sentences) => {
     res.render('select', {
       sentences: sentences,
@@ -22,7 +24,8 @@ router.get('/', (req, res, next) => {
       course: course,
       title: title,
       tabs: tabs,
-      buttons: buttons
+      buttons: buttons,
+      csrfToken: req.csrfToken()
     });
   });
 });

@@ -11,7 +11,7 @@ const Incorrect = require('../models/incorrect');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
-router.post('/', authenticationEnsurer, (req, res, next) => {
+router.post('/', authenticationEnsurer, csrfProtection, (req, res, next) => {
   const recordId = uuid.v4();
   const recordedAt = new Date();
   Record.create({

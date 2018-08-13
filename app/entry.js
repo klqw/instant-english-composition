@@ -83,6 +83,7 @@ $('#cheat-button').click(() => {
 $('#record-button').click(() => {
   if (isRecorded) {
     isRecorded = false;
+    const _csrf = $('#csrf').val();
     $.post('/records', {
       course: course,
       grade: storedGradeAndStage[0],
@@ -90,7 +91,8 @@ $('#record-button').click(() => {
       correct: storedCorrectAndIncorrect[0],
       incorrect: storedCorrectAndIncorrect[1],
       recordedBy: userId,
-      incorrectText: incorrectText
+      incorrectText: incorrectText,
+      _csrf: _csrf
     }, (data) => {
       alert('今回の結果を記録しました。');
     });
