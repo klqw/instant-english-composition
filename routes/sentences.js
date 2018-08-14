@@ -71,7 +71,8 @@ router.get('/search', authenticationEnsurer, (req, res, next) => {
       where: {
         grade: grade,
         stage: stage
-      }
+      },
+      order: [['"sentenceId"', 'ASC']]
     }).then((sentences) => {
       if (sentences) {
         selects.forEach((s) => {
@@ -96,7 +97,8 @@ router.get('/search', authenticationEnsurer, (req, res, next) => {
         }],
       where: {
         createdBy: parseInt(req.query.user)
-      }
+      },
+      order: [['"sentenceId"', 'DESC']]
     }).then((sentences) => {
       res.render('sentence', {
         user: req.user,
@@ -122,8 +124,8 @@ router.post('/one', authenticationEnsurer, csrfProtection, (req, res, next) => {
       question: req.body.question.trim().slice(0, 255),
       answer: answer.trim().slice(0, 255),
       createdBy: req.user.id
-    }).then(() => {
-      res.redirect('/sentences');
+    }).then((sentence) => {
+      res.redirect(`/sentences/search?user=${sentence.createdBy}`);
     });
   } else {
     const err = new Error('英文の形式に誤りがあったため、登録できませんでした。');
@@ -155,6 +157,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
     where: { sentenceId: req.params.sentenceId }
   }).then((sentence) => {
     if (sentence && isMine(req, sentence) || sentence && req.user.username === 'klqw') {
+      const userId = sentence.createdBy;
       if (parseInt(req.query.edit) === 1) {
         const answer = req.body.answer;
         const isChecked = answerCheck(answer);
@@ -166,7 +169,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
             question: req.body.question.trim().slice(0, 255),
             answer: answer.trim().slice(0, 255)
           }).then(() => {
-            res.redirect('/sentences');
+            res.redirect(`/sentences/search?user=${userId}`);
           });
         } else {
           const err = new Error('英文の形式に誤りがあったため、編集できませんでした。');
@@ -176,7 +179,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
       } else if (parseInt(req.query.delete) === 1) {
         Sentence.findById(sentence.sentenceId).then((s) => { return s.destroy();
         }).then(() => {
-          res.redirect('/sentences');
+          res.redirect(`/sentences/search?user=${userId}`);
         });
       } else {
         const err = new Error('不正なリクエストです。');
