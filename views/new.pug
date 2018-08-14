@@ -3,6 +3,7 @@ extends layout
 block content
   input#select-value(type="hidden" data-selects=selects)
 
+  h3.my-3 問題文の新規作成
   form(method="post", action="/sentences/one").my-3
     input(type="hidden" name="_csrf" value!=csrfToken)
     div.form-group
@@ -18,15 +19,15 @@ block content
           if select.grade==1
             option(value=select.stage) #{select.text}
     div.form-group
-      label(for="post-question") 和文
+      label(for="post-question") 問題 (和文)
       input(type="text" name="question")#post-question.form-control
     div.form-group
-      label(for="post-answer") 英文
+      label(for="post-answer") 解答 (英文)
       input(type="text" name="answer")#post-answer.form-control
     div 解答例が複数ある場合、2つまで指定することができます。その場合、[解答例1 / 解答例2]のように記入してください。
-    div.mb-3 例: He is taller than [me / I].
+    div.mb-4 例: He is taller than [me / I].
     div
-      button(type="submit").btn.btn-info 問題文をつくる
+      button(type="submit").btn.btn-info 以上の内容で問題文を作成する
 
   if user.username==='klqw'
     form(method="post", action="/sentences/bulk")
@@ -34,6 +35,6 @@ block content
       div.form-group
         label(for="bulktext") 一気に登録
         textarea(name="bulktext")#bulktext.form-control
-      button(type="submit").btn.btn-info 問題文をつくる
+      button(type="submit").btn.btn-info 以上の内容で問題文を一括作成する
 
   a(href="/sentences").form-control.text-primary.my-3 問題文一覧ページに戻る

@@ -80,7 +80,7 @@ $('#cheat-button').click(() => {
   }
 });
 
-$('#record-button').click(() => {
+$('#record-button').click(() => { // 結果を記録する
   if (isRecorded) {
     isRecorded = false;
     const _csrf = $('#csrf').val();
@@ -262,7 +262,7 @@ function correctDisp() {
   judgeDispProcess('正解です！', 'correct');
   setTimeout(() => {
     nextQuestion();
-  }, 1000);
+  }, 1500);
 }
 
 function incorrectDisp(textRaw, answerRaw) {
@@ -284,7 +284,7 @@ function incorrectDisp(textRaw, answerRaw) {
   });
   setTimeout(() => {
     nextQuestion();
-  }, 1000);
+  }, 8000);
 }
 
 function cheatDisp(textRaw, answerRaw) {

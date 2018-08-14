@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const authenticationEnsurer = require('./authentication-ensurer');
 const common = require('./common');
+const User = require('../models/user');
 const Sentence = require('../models/sentence');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
@@ -63,21 +64,36 @@ router.get('/:sentenceId/edit', authenticationEnsurer, csrfProtection, (req, res
 
 router.get('/search', authenticationEnsurer, (req, res, next) => {
   if (!(isNaN(parseInt(req.query.grade))) && !(isNaN(parseInt(req.query.stage)))) {
+    const grade = parseInt(req.query.grade);
+    const stage = parseInt(req.query.stage);
+    let searchStageText = '';
     Sentence.findAll({
       where: {
-        grade: parseInt(req.query.grade),
-        stage: parseInt(req.query.stage)
+        grade: grade,
+        stage: stage
       }
     }).then((sentences) => {
+      if (sentences) {
+        selects.forEach((s) => {
+          if (grade === s.grade && stage === s.stage) {
+            searchStageText = s.text;
+          }
+        });
+      }
       res.render('sentence', {
         user: req.user,
         grades: grades,
         selects: selects,
-        sentences: sentences
+        sentences: sentences,
+        searchStageText: searchStageText
       });
     });
   } else if (!(isNaN(parseInt(req.query.user)))) {
     Sentence.findAll({
+      include: [{
+        model: User,
+        attributes: ['userId', 'username']
+        }],
       where: {
         createdBy: parseInt(req.query.user)
       }
@@ -110,7 +126,7 @@ router.post('/one', authenticationEnsurer, csrfProtection, (req, res, next) => {
       res.redirect('/sentences');
     });
   } else {
-    const err = new Error('英文の形式に不具合があったため、登録できませんでした。');
+    const err = new Error('英文の形式に誤りがあったため、登録できませんでした。');
     err.status = 400;
     next(err);
   }
@@ -128,7 +144,7 @@ router.post('/bulk', authenticationEnsurer, csrfProtection, (req, res, next) => 
       });
     });
   } else {
-    const err = new Error('入力の形式に不具合があったため、登録できませんでした。');
+    const err = new Error('入力の形式に誤りがあったため、登録できませんでした。');
     err.status = 400;
     next(err);
   }
@@ -153,7 +169,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
             res.redirect('/sentences');
           });
         } else {
-          const err = new Error('英文の形式に不具合があったため、編集できませんでした。');
+          const err = new Error('英文の形式に誤りがあったため、編集できませんでした。');
           err.status = 400;
           next(err);
         }

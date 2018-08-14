@@ -10547,6 +10547,7 @@ var count = void 0,
 });
 
 (0, _jquery2.default)('#record-button').click(function () {
+  // 結果を記録する
   if (isRecorded) {
     isRecorded = false;
     var _csrf = (0, _jquery2.default)('#csrf').val();
@@ -10730,7 +10731,7 @@ function correctDisp() {
   judgeDispProcess('正解です！', 'correct');
   setTimeout(function () {
     nextQuestion();
-  }, 1000);
+  }, 1500);
 }
 
 function incorrectDisp(textRaw, answerRaw) {
@@ -10750,7 +10751,7 @@ function incorrectDisp(textRaw, answerRaw) {
   });
   setTimeout(function () {
     nextQuestion();
-  }, 1000);
+  }, 8000);
 }
 
 function cheatDisp(textRaw, answerRaw) {

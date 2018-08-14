@@ -6,7 +6,7 @@ block content
     input#stored-select(type="hidden" data-grade=sentences[0].grade data-stage=sentences[0].stage)
 
   div
-    a(href="/sentences/new").form-control.text-primary.my-3 新しい問題文を作る
+    a(href="/sentences/new").form-control.text-primary.my-3 新しい問題文を作成する
   div.card.p-3
     form(method="get", action="/sentences/search")
       label.ml-2.pl-2 学年
@@ -26,28 +26,39 @@ block content
       label.border.border-light.m-2.px-2.py-1 #{user.username} さんが作成した問題文で
       button(type="submit").px-2.py-1 絞り込み検索
 
-  if (sentences.length > 0)
-    - var isAdmin = (user.username === 'klqw')
-    h3.my-3 問題文一覧
-    each sentence in sentences
-      - var isMine = (sentence.createdBy === parseInt(user.id))
-      table
-        tr
-          td No.#{sentence.sentenceId}
-          td
-        tr
-          td 問題　　
-          td #{sentence.question}
-        tr
-          td 解答　　
-          td #{sentence.answer}
-        tr
-          td
-          if (isMine || isAdmin)
-            td
-              a.edit-link(href=`/sentences/${sentence.sentenceId}/edit` data-grade=sentence.grade data-stage=sentence.stage) この問題文を編集する
-          else
-            td
-      hr
-  else
-    p.my-3 まだ問題文はありません。
+  div.card.my-3
+    if (sentences.length > 0)
+      - var isAdmin = (user.username === 'klqw')
+      div.card-header
+        if searchStageText
+          h3.my-3 問題文一覧 - #{searchStageText}
+        else if sentences[0].user
+          h3.my-3 問題文一覧 - #{sentences[0].user.username}さんが作成した問題文
+        else
+          h3.my-3 問題文一覧 - すべての問題文
+      div.card-body
+        each sentence in sentences
+          - var isMine = (sentence.createdBy === parseInt(user.id))
+          table
+            tr
+              td No.#{sentence.sentenceId}
+              td
+            tr
+              td 問題　　
+              td #{sentence.question}
+            tr
+              td 解答　　
+              td #{sentence.answer}
+            tr
+              td
+              if (isMine || isAdmin)
+                td
+                  a.edit-link(href=`/sentences/${sentence.sentenceId}/edit` data-grade=sentence.grade data-stage=sentence.stage) この問題文を編集する
+              else
+                td
+          hr
+    else
+      p.my-3 まだ問題文はありません。
+
+  div
+    a(href="/").form-control.text-primary.my-3 ホームに戻る

@@ -15,6 +15,7 @@ var Record = require('./models/record');
 var Incorrect = require('./models/incorrect');
 
 User.sync().then(() => {
+  Sentence.belongsTo(User, {foreignKey: 'createdBy'});
   Sentence.sync();
   Record.belongsTo(User, {foreignKey: 'recordedBy'});
   Record.sync();
