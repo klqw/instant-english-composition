@@ -214,7 +214,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     $('#question-display').removeClass('non-started');
-    $('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
+    $('#question-display').html(escapeHtml(setSentences[count].question).replace(/　/g, '<br>'));
     $('#close').removeClass('hidden');
     $('#cheat-zone').removeClass('hidden');
     isStarted = true;
@@ -317,7 +317,7 @@ function judgeDispProcess(text, className) {
 function nextQuestion() {
   count++;
   if (count < finishCount) {
-    $('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
+    $('#question-display').html(escapeHtml(setSentences[count].question).replace(/　/g, '<br>'));
     $('#answer-text').val('');
     $('#answer-text').focus();
     isStarted = true;
@@ -391,7 +391,7 @@ function incorrectRetry() {
   incorrectSentences = [];
   count = 0;
   finishCount = setSentences.length;
-  $('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+  $('#question-display').html(setSentences[count].question.replace(/　/g, '<br>'));
   isStarted = true;
   isCheated = false;
 }

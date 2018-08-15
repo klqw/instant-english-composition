@@ -10681,7 +10681,7 @@ function countDown(countDownTime) {
   if (countDownTime < 0) {
     clearTimeout(timerId);
     (0, _jquery2.default)('#question-display').removeClass('non-started');
-    (0, _jquery2.default)('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
+    (0, _jquery2.default)('#question-display').html(escapeHtml(setSentences[count].question).replace(/　/g, '<br>'));
     (0, _jquery2.default)('#close').removeClass('hidden');
     (0, _jquery2.default)('#cheat-zone').removeClass('hidden');
     isStarted = true;
@@ -10784,7 +10784,7 @@ function judgeDispProcess(text, className) {
 function nextQuestion() {
   count++;
   if (count < finishCount) {
-    (0, _jquery2.default)('#question-display').html(escapeHtml(setSentences[count].question).replace(/(\s|　)/g, '<br>'));
+    (0, _jquery2.default)('#question-display').html(escapeHtml(setSentences[count].question).replace(/　/g, '<br>'));
     (0, _jquery2.default)('#answer-text').val('');
     (0, _jquery2.default)('#answer-text').focus();
     isStarted = true;
@@ -10848,7 +10848,7 @@ function incorrectRetry() {
   incorrectSentences = [];
   count = 0;
   finishCount = setSentences.length;
-  (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/(\s|　)/g, '<br>'));
+  (0, _jquery2.default)('#question-display').html(setSentences[count].question.replace(/　/g, '<br>'));
   isStarted = true;
   isCheated = false;
 }
