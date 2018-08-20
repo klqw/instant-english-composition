@@ -73,8 +73,7 @@ $('#cheat-button').click(() => {
   if (!isCheated) {
     isCheated = true;
     const answerExample = wordChoice(setSentences[count].answer);
-    const exampleNum = Math.floor(Math.random() * answerExample.length);
-    const escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
+    const escapedAnswerExample = escapeHtml(answerExample[0]);
     $('#answer-text').focus();
     $('#cheat-display').html(`解答例はこちら<br>${escapedAnswerExample}`);
   }
@@ -268,8 +267,7 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   const escapedText = escapeHtml(textRaw);
   const answerExample = wordChoice(answerRaw);
-  const exampleNum = Math.floor(Math.random() * answerExample.length);
-  const escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
+  const escapedAnswerExample = escapeHtml(answerExample[0]);
   const incorrectText = '不正解です！<br>' +
                         `<span style="color: orange">あなたの解答</span><br>${escapedText}<br>` +
                         `<span style="color: orange">解答例はこちら</span><br>${escapedAnswerExample}`;
@@ -289,7 +287,6 @@ function incorrectDisp(textRaw, answerRaw) {
 
 function cheatDisp(textRaw, answerRaw) {
   const answerExample = wordChoice(answerRaw);
-  const exampleNum = Math.floor(Math.random() * answerExample.length);
   judgeDispProcess('次の問題に行きましょう！', 'cheat');
   incorrectSentences.push({
     grade: setSentences[count].grade,
@@ -297,7 +294,7 @@ function cheatDisp(textRaw, answerRaw) {
     question: escapeHtml(setSentences[count].question),
     yourAnswer: escapeHtml(textRaw) + ' (カンニング)',
     answerRaw: answerRaw,
-    answerExample: escapeHtml(answerExample[exampleNum])
+    answerExample: escapeHtml(answerExample[0])
   });
   setTimeout(() => {
     isCheated = false;
@@ -443,6 +440,8 @@ function replacer(str) {
   str = str.replace(/Didn\'t/g, 'Did not');
   str = str.replace(/can\'t/g, 'cannot');
   str = str.replace(/Can\'t/g, 'Cannot');
+  str = str.replace(/couldn\'t/g, 'could not');
+  str = str.replace(/Couldn\'t/g, 'Could not');
   str = str.replace(/won\'t/g, 'will not');
   str = str.replace(/Won\'t/g, 'Will not');
   str = str.replace(/mustn\'t/g, 'must not');
@@ -481,7 +480,7 @@ function wordChoice(str) {
     if (tmpReplace.indexOf('[') >= 0) {
       frontWord = tmpReplace.slice(tmpReplace.indexOf('[') + 1, tmpReplace.indexOf('/')).trim();
       backWord = tmpReplace.slice(tmpReplace.indexOf('/') + 1, tmpReplace.indexOf(']')).trim();
-      tmpReplace = tmpReplace.replace(/\[((\w[\'\,\.\?\!]*)+\s+)+\/(\s+(\w[\'\,\.\?\!]*)*)+\]/, '&&&');
+      tmpReplace = tmpReplace.replace(/\[((\w[',!\-\.\?]*)+\s+)+\/(\s+(\w[',!\-\.\?]*)*)+\]/, '&&&');
       candidatesWords[matchCount] = [frontWord, backWord];
       matchCount++;
     } else {

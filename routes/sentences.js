@@ -199,7 +199,7 @@ function answerCheck(str) {
   let tmpReplace = str;
 
   if (tmpReplace.indexOf('[') >= 0) {
-    tmpReplace = tmpReplace.replace(/\[((\w[\'\,\.\?\!]*)+\s+)+\/(\s+(\w[\'\,\.\?\!]*)*)+\]/g, '&&&');
+    tmpReplace = tmpReplace.replace(/\[((\w[',!\-\.\?]*)+\s+)+\/(\s+(\w[',!\-\.\?]*)*)+\]/g, '&&&');
   }
   if (tmpReplace.indexOf('[') >= 0) {
     isChecked = false;

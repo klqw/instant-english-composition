@@ -10539,8 +10539,7 @@ var count = void 0,
   if (!isCheated) {
     isCheated = true;
     var answerExample = wordChoice(setSentences[count].answer);
-    var exampleNum = Math.floor(Math.random() * answerExample.length);
-    var escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
+    var escapedAnswerExample = escapeHtml(answerExample[0]);
     (0, _jquery2.default)('#answer-text').focus();
     (0, _jquery2.default)('#cheat-display').html('\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089<br>' + escapedAnswerExample);
   }
@@ -10737,8 +10736,7 @@ function correctDisp() {
 function incorrectDisp(textRaw, answerRaw) {
   var escapedText = escapeHtml(textRaw);
   var answerExample = wordChoice(answerRaw);
-  var exampleNum = Math.floor(Math.random() * answerExample.length);
-  var escapedAnswerExample = escapeHtml(answerExample[exampleNum]);
+  var escapedAnswerExample = escapeHtml(answerExample[0]);
   var incorrectText = '不正解です！<br>' + ('<span style="color: orange">\u3042\u306A\u305F\u306E\u89E3\u7B54</span><br>' + escapedText + '<br>') + ('<span style="color: orange">\u89E3\u7B54\u4F8B\u306F\u3053\u3061\u3089</span><br>' + escapedAnswerExample);
   judgeDispProcess(incorrectText, 'incorrect');
   incorrectSentences.push({
@@ -10756,7 +10754,6 @@ function incorrectDisp(textRaw, answerRaw) {
 
 function cheatDisp(textRaw, answerRaw) {
   var answerExample = wordChoice(answerRaw);
-  var exampleNum = Math.floor(Math.random() * answerExample.length);
   judgeDispProcess('次の問題に行きましょう！', 'cheat');
   incorrectSentences.push({
     grade: setSentences[count].grade,
@@ -10764,7 +10761,7 @@ function cheatDisp(textRaw, answerRaw) {
     question: escapeHtml(setSentences[count].question),
     yourAnswer: escapeHtml(textRaw) + ' (カンニング)',
     answerRaw: answerRaw,
-    answerExample: escapeHtml(answerExample[exampleNum])
+    answerExample: escapeHtml(answerExample[0])
   });
   setTimeout(function () {
     isCheated = false;
@@ -10901,6 +10898,8 @@ function replacer(str) {
   str = str.replace(/Didn\'t/g, 'Did not');
   str = str.replace(/can\'t/g, 'cannot');
   str = str.replace(/Can\'t/g, 'Cannot');
+  str = str.replace(/couldn\'t/g, 'could not');
+  str = str.replace(/Couldn\'t/g, 'Could not');
   str = str.replace(/won\'t/g, 'will not');
   str = str.replace(/Won\'t/g, 'Will not');
   str = str.replace(/mustn\'t/g, 'must not');
@@ -10941,7 +10940,7 @@ function wordChoice(str) {
     if (tmpReplace.indexOf('[') >= 0) {
       frontWord = tmpReplace.slice(tmpReplace.indexOf('[') + 1, tmpReplace.indexOf('/')).trim();
       backWord = tmpReplace.slice(tmpReplace.indexOf('/') + 1, tmpReplace.indexOf(']')).trim();
-      tmpReplace = tmpReplace.replace(/\[((\w[\'\,\.\?\!]*)+\s+)+\/(\s+(\w[\'\,\.\?\!]*)*)+\]/, '&&&');
+      tmpReplace = tmpReplace.replace(/\[((\w[',!\-\.\?]*)+\s+)+\/(\s+(\w[',!\-\.\?]*)*)+\]/, '&&&');
       candidatesWords[matchCount] = [frontWord, backWord];
       matchCount++;
     } else {
