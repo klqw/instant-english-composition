@@ -235,6 +235,7 @@ function shuffle(array) {
 function judgement(textRaw, answerRaw) {
   const textReplace = replacer(textRaw);
   const answerReplace = replacer(answerRaw);
+  let judgementAnswer = ''; // 解が複数ある場合の判定に使う変数
 
   if (isCheated) {  // カンニングボタンを押したときの処理
     cheatDisp(textRaw, answerRaw);
@@ -242,7 +243,8 @@ function judgement(textRaw, answerRaw) {
     const answersCandidates = wordChoice(answerReplace);
     let correctFlag = false;
     for (let i = 0; i < answersCandidates.length; i++) {
-      if (textReplace === answersCandidates[i]) {
+      judgementAnswer = replacer(answersCandidates[i]); // 判定時のエラーを防ぐために再度replacer関数を通す
+      if (textReplace === judgementAnswer) {
         correctFlag = true;
         break;
       }
