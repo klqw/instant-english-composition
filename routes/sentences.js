@@ -195,7 +195,7 @@ router.post('/:sentenceId', authenticationEnsurer, csrfProtection, (req, res, ne
 });
 
 function answerCheck(str) {
-  let isChecked = (/^[A-Z]/).test(str);
+  let isChecked = (/^[A-Z]/).test(str) || (/^\[/).test(str);  // 行頭の文字が大文字または'['であるかどうかをチェック
   let tmpReplace = str;
 
   if (tmpReplace.indexOf('[') >= 0) {
